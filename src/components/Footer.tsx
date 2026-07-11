@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
+import { getHomepageSettings } from '@/lib/homepage';
 
 const perks = [
   { title: 'Livraison offerte', desc: "Dès 80€ d'achat" },
@@ -8,7 +9,9 @@ const perks = [
   { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux' },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const homepage = await getHomepageSettings();
+
   return (
     <footer className="mt-24 border-t border-foreground/10">
       <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-foreground/10 border-b border-foreground/10">
@@ -22,7 +25,7 @@ export function Footer() {
 
       <div className="mx-auto max-w-7xl px-6 md:px-8 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div>
-          <Logo size={48} />
+          <Logo size={48} src={homepage.logoUrl} />
           <p className="mt-4 text-sm text-foreground/50 leading-relaxed max-w-xs">
             Plus qu&apos;une marque, un héritage. Des pièces intemporelles conçues pour ceux qui savent se distinguer.
           </p>

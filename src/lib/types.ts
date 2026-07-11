@@ -12,6 +12,7 @@ export type ProductVariant = {
   sku: string;
   stock: number;
   price: number;
+  imageUrl: string | null;
 };
 
 export type Product = {
@@ -77,6 +78,7 @@ export type ShippingZone = {
 };
 
 export type HomepageSettings = {
+  logoUrl: string | null;
   heroKicker: string;
   heroTitle: string;
   heroSubtitle: string;

@@ -4,7 +4,12 @@ import Image from 'next/image';
 
 const LOGO_FILE = path.join(process.cwd(), 'public', 'logo.png');
 
-export function Logo({ size = 56 }: { size?: number }) {
+export function Logo({ size = 56, src }: { size?: number; src?: string | null }) {
+  if (src) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt="Le Suffète" width={size} height={size} className="object-contain" style={{ width: size, height: size }} />;
+  }
+
   const hasLogo = fs.existsSync(LOGO_FILE);
 
   if (hasLogo) {

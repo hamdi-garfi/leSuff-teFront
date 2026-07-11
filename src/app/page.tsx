@@ -37,7 +37,17 @@ export default async function HomePage() {
           <div className="relative aspect-square mx-auto w-full max-w-[357px] flex items-center justify-center">
             <div className="absolute inset-0 rounded-full bg-gold/10 blur-3xl" />
             <div className="absolute inset-0 rounded-full border border-gold/15" />
-            <Image src="/logo.png" alt="Le Suffète" width={280} height={280} className="object-contain relative z-10 p-8" priority />
+            {homepage.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={homepage.logoUrl}
+                alt="Le Suffète"
+                className="object-contain relative z-10 p-8"
+                style={{ width: 280, height: 280 }}
+              />
+            ) : (
+              <Image src="/logo.png" alt="Le Suffète" width={280} height={280} className="object-contain relative z-10 p-8" priority />
+            )}
           </div>
         </div>
       </section>

@@ -37,7 +37,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         </nav>
 
         <Link href="/" className="flex items-center gap-3 shrink-0 px-2">
-          <Logo size={56} />
+          <Logo size={56} src={homepage.logoUrl} />
           <Wordmark className="hidden sm:flex" />
         </Link>
 
