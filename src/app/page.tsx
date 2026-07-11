@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/catalog';
 import { ProductCard } from '@/components/ProductCard';
+import { MountainBackdrop } from '@/components/MountainBackdrop';
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   polos: 'linear-gradient(155deg, #1e2a4a 0%, #0a0a0a 130%)',
@@ -17,7 +18,8 @@ export default async function HomePage() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-6 md:px-8 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
+        <MountainBackdrop />
+        <div className="relative mx-auto max-w-7xl px-6 md:px-8 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <p className="text-gold text-xs tracking-widest2 mb-4">FORCE. STYLE. HÉRITAGE.</p>
             <h1 className="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">
