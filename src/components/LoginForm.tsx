@@ -38,19 +38,19 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto">
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">E-MAIL</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">E-MAIL</label>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
       </div>
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs tracking-widest2 text-white/60">MOT DE PASSE</label>
-          <Link href="/compte/mot-de-passe-oublie" className="text-xs text-white/40 hover:text-gold">
+          <label className="text-xs tracking-widest2 text-foreground/60">MOT DE PASSE</label>
+          <Link href="/compte/mot-de-passe-oublie" className="text-xs text-foreground/40 hover:text-gold">
             Oublié ?
           </Link>
         </div>
@@ -59,14 +59,14 @@ export function LoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button type="submit" disabled={loading} className="btn-gold w-full disabled:opacity-50">
         {loading ? 'Connexion…' : 'SE CONNECTER'}
       </button>
-      <p className="text-sm text-white/50 text-center">
+      <p className="text-sm text-foreground/50 text-center">
         Pas encore de compte ?{' '}
         <Link href="/compte/inscription" className="text-gold hover:underline">
           Créer un compte

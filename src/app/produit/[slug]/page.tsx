@@ -34,7 +34,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
   return (
     <div className="mx-auto max-w-7xl px-6 md:px-8 py-16">
-      <p className="text-xs text-white/40 mb-8">
+      <p className="text-xs text-foreground/40 mb-8">
         <Link href="/" className="hover:text-gold">
           Accueil
         </Link>{' '}
@@ -42,7 +42,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <Link href={`/collection/${product.category.slug}`} className="hover:text-gold">
           {product.category.name}
         </Link>{' '}
-        / <span className="text-white/70">{product.name}</span>
+        / <span className="text-foreground/70">{product.name}</span>
       </p>
 
       <div className="grid md:grid-cols-2 gap-12">
@@ -65,20 +65,20 @@ export default async function ProductPage({ params }: { params: { slug: string }
           {reviews.average !== null && (
             <div className="flex items-center gap-2 mb-3">
               <StarRating value={reviews.average} />
-              <span className="text-xs text-white/40">
+              <span className="text-xs text-foreground/40">
                 {reviews.average} · {reviews.count} avis
               </span>
             </div>
           )}
           <p className="text-2xl mb-6">
-            <span className={onSale ? 'text-gold font-semibold' : 'text-white/90'}>{product.basePrice.toFixed(2)} €</span>
-            {onSale && <span className="text-white/40 line-through ml-3 text-lg">{product.compareAtPrice!.toFixed(2)} €</span>}
+            <span className={onSale ? 'text-gold font-semibold' : 'text-foreground/90'}>{product.basePrice.toFixed(2)} €</span>
+            {onSale && <span className="text-foreground/40 line-through ml-3 text-lg">{product.compareAtPrice!.toFixed(2)} €</span>}
           </p>
-          {product.description && <p className="text-white/60 mb-8 leading-relaxed">{product.description}</p>}
+          {product.description && <p className="text-foreground/60 mb-8 leading-relaxed">{product.description}</p>}
 
           <AddToCartForm variants={product.variants} />
 
-          <dl className="mt-10 pt-6 border-t border-white/10 text-xs text-white/40 space-y-1">
+          <dl className="mt-10 pt-6 border-t border-foreground/10 text-xs text-foreground/40 space-y-1">
             <div className="flex gap-2">
               <dt className="tracking-widest2">COULEUR</dt>
               <dd>{color}</dd>
@@ -97,7 +97,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
           </dl>
 
           {product.shippingNote && (
-            <p className="mt-4 text-xs text-white/50 leading-relaxed">{product.shippingNote}</p>
+            <p className="mt-4 text-xs text-foreground/50 leading-relaxed">{product.shippingNote}</p>
           )}
         </div>
       </div>
@@ -118,18 +118,18 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <div className="grid md:grid-cols-3 gap-12">
           <div className="md:col-span-2 space-y-6">
             {reviews.items.length === 0 ? (
-              <p className="text-white/50 text-sm">Aucun avis pour ce produit pour le moment.</p>
+              <p className="text-foreground/50 text-sm">Aucun avis pour ce produit pour le moment.</p>
             ) : (
               reviews.items.map((review) => (
-                <div key={review.id} className="border-b border-white/10 pb-6">
+                <div key={review.id} className="border-b border-foreground/10 pb-6">
                   <div className="flex items-center gap-2 mb-1">
                     <StarRating value={review.rating} />
                     <span className="text-sm">{review.author}</span>
                   </div>
-                  <p className="text-xs text-white/40 mb-2">
+                  <p className="text-xs text-foreground/40 mb-2">
                     {new Date(review.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
-                  {review.comment && <p className="text-white/70 text-sm">{review.comment}</p>}
+                  {review.comment && <p className="text-foreground/70 text-sm">{review.comment}</p>}
                 </div>
               ))
             )}

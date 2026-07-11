@@ -42,13 +42,13 @@ export default async function CategoryPage({
       <h1 className="section-title">{category.name.toUpperCase()}</h1>
       <div className="section-title-underline" />
       {category.description && (
-        <p className="text-center text-white/50 max-w-lg mx-auto -mt-6 mb-10">{category.description}</p>
+        <p className="text-center text-foreground/50 max-w-lg mx-auto -mt-6 mb-10">{category.description}</p>
       )}
 
       <SearchBox basePath={`/collection/${params.slug}`} defaultValue={search} />
 
       {items.length === 0 ? (
-        <p className="text-center text-white/50 mt-12">Aucun produit dans cette collection pour le moment.</p>
+        <p className="text-center text-foreground/50 mt-12">Aucun produit dans cette collection pour le moment.</p>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">

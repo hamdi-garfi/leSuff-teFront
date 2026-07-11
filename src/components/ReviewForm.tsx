@@ -12,7 +12,7 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
 
   if (!isAuthenticated) {
     return (
-      <p className="text-sm text-white/50">
+      <p className="text-sm text-foreground/50">
         <a href="/compte/connexion" className="text-gold hover:underline">
           Connecte-toi
         </a>{' '}
@@ -45,15 +45,15 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border border-white/10 p-5 max-w-md">
-      <label className="text-xs tracking-widest2 text-white/60 block mb-2">NOTE</label>
+    <form onSubmit={handleSubmit} className="border border-foreground/10 p-5 max-w-md">
+      <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">NOTE</label>
       <div className="flex gap-1 mb-4">
         {[1, 2, 3, 4, 5].map((n) => (
           <button
             key={n}
             type="button"
             onClick={() => setRating(n)}
-            className={`text-xl ${n <= rating ? 'text-gold' : 'text-white/20'}`}
+            className={`text-xl ${n <= rating ? 'text-gold' : 'text-foreground/20'}`}
             aria-label={`${n} étoiles`}
           >
             ★
@@ -65,7 +65,7 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
         onChange={(e) => setComment(e.target.value)}
         placeholder="Votre avis (optionnel)"
         rows={3}
-        className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-3"
+        className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-3"
       />
       {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
       <button type="submit" disabled={status === 'loading'} className="btn-gold disabled:opacity-50">

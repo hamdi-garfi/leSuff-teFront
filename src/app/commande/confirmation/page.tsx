@@ -14,8 +14,8 @@ export default function OrderConfirmationPage({
       <p className="text-gold text-xs tracking-widest2 mb-4">MERCI</p>
       <h1 className="font-serif text-4xl mb-6">Votre commande est confirmée</h1>
       {searchParams.number && (
-        <p className="text-white/60 mb-2">
-          Numéro de commande : <span className="text-white">{searchParams.number}</span>
+        <p className="text-foreground/60 mb-2">
+          Numéro de commande : <span className="text-foreground">{searchParams.number}</span>
         </p>
       )}
       {searchParams.discount && (

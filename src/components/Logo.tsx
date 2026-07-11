@@ -49,7 +49,7 @@ export function Wordmark({ className = '' }: { className?: string }) {
       <span className="font-serif text-2xl tracking-widest2 bg-gradient-to-b from-gold-light to-gold-dark bg-clip-text text-transparent">
         LE SUFFÈTE
       </span>
-      <span className="text-[10px] tracking-[0.35em] text-white/60 -mt-1">CLASSIC</span>
+      <span className="text-[10px] tracking-[0.35em] text-foreground/60 -mt-1">CLASSIC</span>
     </div>
   );
 }

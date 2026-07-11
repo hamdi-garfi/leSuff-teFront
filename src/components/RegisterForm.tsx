@@ -40,51 +40,51 @@ export function RegisterForm() {
     <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs tracking-widest2 text-white/60 block mb-2">PRÉNOM</label>
+          <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">PRÉNOM</label>
           <input
             required
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+            className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
           />
         </div>
         <div>
-          <label className="text-xs tracking-widest2 text-white/60 block mb-2">NOM</label>
+          <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">NOM</label>
           <input
             required
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+            className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
           />
         </div>
       </div>
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">E-MAIL</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">E-MAIL</label>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
       </div>
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">MOT DE PASSE</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">MOT DE PASSE</label>
         <input
           type="password"
           required
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
-        <p className="text-xs text-white/40 mt-1">8 caractères minimum.</p>
+        <p className="text-xs text-foreground/40 mt-1">8 caractères minimum.</p>
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button type="submit" disabled={loading} className="btn-gold w-full disabled:opacity-50">
         {loading ? 'Création…' : 'CRÉER MON COMPTE'}
       </button>
-      <p className="text-sm text-white/50 text-center">
+      <p className="text-sm text-foreground/50 text-center">
         Déjà client ?{' '}
         <Link href="/compte/connexion" className="text-gold hover:underline">
           Se connecter

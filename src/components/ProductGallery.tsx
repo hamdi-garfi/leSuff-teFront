@@ -26,7 +26,7 @@ export function ProductGallery({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={activeImage} alt={name} className="w-full h-full object-cover" />
         ) : (
-          <span className="font-serif text-9xl text-white/10 select-none">{name.charAt(0)}</span>
+          <span className="font-serif text-9xl text-foreground/10 select-none">{name.charAt(0)}</span>
         )}
         {badge}
       </div>
@@ -40,7 +40,7 @@ export function ProductGallery({
               onClick={() => setActiveIndex(index)}
               aria-label={`Voir l'image ${index + 1}`}
               className={`w-16 h-16 shrink-0 overflow-hidden border transition ${
-                index === activeIndex ? 'border-gold' : 'border-white/15 hover:border-white/40'
+                index === activeIndex ? 'border-gold' : 'border-foreground/15 hover:border-foreground/40'
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

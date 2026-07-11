@@ -17,7 +17,7 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-white/10">
+      <section className="relative overflow-hidden border-b border-foreground/10">
         <MountainBackdrop />
         <div className="relative mx-auto max-w-7xl px-6 md:px-8 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -27,7 +27,7 @@ export default async function HomePage() {
               <br />
               CLASSIC
             </h1>
-            <p className="text-white/60 mb-8 max-w-sm">
+            <p className="text-foreground/60 mb-8 max-w-sm">
               L&apos;élégance affirmée.
               <br />
               L&apos;héritage qui inspire.

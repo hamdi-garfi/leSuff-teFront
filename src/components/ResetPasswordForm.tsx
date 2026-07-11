@@ -15,7 +15,7 @@ export function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <p className="text-center text-white/50 max-w-sm mx-auto">
+      <p className="text-center text-foreground/50 max-w-sm mx-auto">
         Lien invalide.{' '}
         <Link href="/compte/mot-de-passe-oublie" className="text-gold hover:underline">
           Demander un nouveau lien
@@ -58,25 +58,25 @@ export function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto">
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">NOUVEAU MOT DE PASSE</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">NOUVEAU MOT DE PASSE</label>
         <input
           type="password"
           required
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
-        <p className="text-xs text-white/40 mt-1">8 caractères minimum.</p>
+        <p className="text-xs text-foreground/40 mt-1">8 caractères minimum.</p>
       </div>
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">CONFIRMER LE MOT DE PASSE</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CONFIRMER LE MOT DE PASSE</label>
         <input
           type="password"
           required
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-3 text-sm outline-none focus:border-gold"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-3 text-sm outline-none focus:border-gold"
         />
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}

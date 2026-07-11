@@ -2,7 +2,7 @@ export function MountainBackdrop() {
   return (
     <svg
       aria-hidden="true"
-      className="absolute inset-0 w-full h-full pointer-events-none"
+      className="mountain-backdrop absolute inset-0 w-full h-full pointer-events-none"
       viewBox="0 0 1600 800"
       preserveAspectRatio="xMidYMax slice"
     >

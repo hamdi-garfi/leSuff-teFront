@@ -77,23 +77,23 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
 
   return (
     <div>
-      {addresses.length === 0 && !showForm && <p className="text-white/50 text-sm mb-6">Aucune adresse enregistrée.</p>}
+      {addresses.length === 0 && !showForm && <p className="text-foreground/50 text-sm mb-6">Aucune adresse enregistrée.</p>}
 
       {addresses.length > 0 && (
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           {addresses.map((address) => (
-            <div key={address.id} className="border border-white/10 p-5">
+            <div key={address.id} className="border border-foreground/10 p-5">
               <p className="text-sm">{address.street}</p>
-              {address.complement && <p className="text-sm text-white/60">{address.complement}</p>}
-              <p className="text-sm text-white/60">
+              {address.complement && <p className="text-sm text-foreground/60">{address.complement}</p>}
+              <p className="text-sm text-foreground/60">
                 {address.postalCode} {address.city}
               </p>
-              <p className="text-sm text-white/60 mb-4">{address.country}</p>
+              <p className="text-sm text-foreground/60 mb-4">{address.country}</p>
               <div className="flex gap-4 text-xs tracking-widest2">
                 <button type="button" onClick={() => startEdit(address)} className="hover:text-gold transition">
                   MODIFIER
                 </button>
-                <button type="button" onClick={() => handleDelete(address.id)} className="text-white/40 hover:text-red-400 transition">
+                <button type="button" onClick={() => handleDelete(address.id)} className="text-foreground/40 hover:text-red-400 transition">
                   SUPPRIMER
                 </button>
               </div>
@@ -103,56 +103,56 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
       )}
 
       {showForm ? (
-        <form onSubmit={handleSubmit} className="border border-white/10 p-6 space-y-4 max-w-lg">
+        <form onSubmit={handleSubmit} className="border border-foreground/10 p-6 space-y-4 max-w-lg">
           <div>
-            <label className="text-xs tracking-widest2 text-white/60 block mb-2">ADRESSE</label>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE</label>
             <input
               type="text"
               required
               value={form.street}
               onChange={(e) => setForm({ ...form, street: e.target.value })}
-              className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
             />
           </div>
           <div>
-            <label className="text-xs tracking-widest2 text-white/60 block mb-2">COMPLÉMENT (OPTIONNEL)</label>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">COMPLÉMENT (OPTIONNEL)</label>
             <input
               type="text"
               value={form.complement}
               onChange={(e) => setForm({ ...form, complement: e.target.value })}
-              className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs tracking-widest2 text-white/60 block mb-2">CODE POSTAL</label>
+              <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CODE POSTAL</label>
               <input
                 type="text"
                 required
                 value={form.postalCode}
                 onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
-                className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
               />
             </div>
             <div>
-              <label className="text-xs tracking-widest2 text-white/60 block mb-2">VILLE</label>
+              <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">VILLE</label>
               <input
                 type="text"
                 required
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
-                className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs tracking-widest2 text-white/60 block mb-2">PAYS</label>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">PAYS</label>
             <input
               type="text"
               required
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
-              className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
             />
           </div>
           {error && <p className="text-sm text-red-400">{error}</p>}

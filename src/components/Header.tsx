@@ -2,12 +2,13 @@ import Link from 'next/link';
 import { Logo, Wordmark } from '@/components/Logo';
 import { getCategories } from '@/lib/catalog';
 import type { CurrentUser } from '@/lib/types';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
   const categories = await getCategories();
 
   return (
-    <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-foreground/10">
       <div className="bg-gold-dark/90 text-ink text-[11px] tracking-widest2 text-center py-1.5 px-4">
         LIVRAISON OFFERTE DÈS 80€ D&apos;ACHAT
       </div>
@@ -33,6 +34,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         </Link>
 
         <div className="flex items-center gap-5 flex-1 justify-end">
+          <ThemeToggle />
           <Link
             href={user ? '/compte' : '/compte/connexion'}
             className="hover:text-gold transition text-xs tracking-widest2 uppercase hidden sm:inline"

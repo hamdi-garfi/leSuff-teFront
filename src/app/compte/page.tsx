@@ -27,12 +27,12 @@ export default async function AccountPage() {
       <h1 className="section-title">MON COMPTE</h1>
       <div className="section-title-underline" />
 
-      <div className="flex items-center justify-between border border-white/10 p-6 mb-12">
+      <div className="flex items-center justify-between border border-foreground/10 p-6 mb-12">
         <div>
           <p className="text-sm">
             {user.firstName} {user.lastName}
           </p>
-          <p className="text-sm text-white/50">{user.email}</p>
+          <p className="text-sm text-foreground/50">{user.email}</p>
         </div>
         <div className="flex items-center gap-6">
           <Link href="/compte/adresses" className="text-xs tracking-widest2 hover:text-gold transition">
@@ -42,21 +42,21 @@ export default async function AccountPage() {
         </div>
       </div>
 
-      <h2 className="text-xs tracking-widest2 text-white/60 mb-4">MES COMMANDES</h2>
+      <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">MES COMMANDES</h2>
       {orders.length === 0 ? (
-        <p className="text-white/50 text-sm">Vous n&apos;avez pas encore passé de commande.</p>
+        <p className="text-foreground/50 text-sm">Vous n&apos;avez pas encore passé de commande.</p>
       ) : (
-        <div className="divide-y divide-white/10">
+        <div className="divide-y divide-foreground/10">
           {orders.map((order) => (
             <div key={order.id} className="py-5">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm">{order.number}</span>
                 <span className="text-xs text-gold">{STATUS_LABELS[order.status] ?? order.status}</span>
               </div>
-              <p className="text-xs text-white/40 mb-2">
+              <p className="text-xs text-foreground/40 mb-2">
                 {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
               </p>
-              <ul className="text-xs text-white/50 space-y-1">
+              <ul className="text-xs text-foreground/50 space-y-1">
                 {order.items.map((item, idx) => (
                   <li key={idx}>
                     {item.quantity}× {item.productName} ({item.size}, {item.color})

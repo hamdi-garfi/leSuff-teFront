@@ -22,7 +22,7 @@ export default async function CollectionPage({ searchParams }: { searchParams: {
       <SearchBox basePath="/collection" defaultValue={search} />
 
       {items.length === 0 ? (
-        <p className="text-center text-white/50 mt-12">Aucun produit ne correspond à cette recherche.</p>
+        <p className="text-center text-foreground/50 mt-12">Aucun produit ne correspond à cette recherche.</p>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">

@@ -26,7 +26,7 @@ export function Pagination({
       <Link
         href={hrefFor(Math.max(1, page - 1))}
         aria-disabled={page <= 1}
-        className={`w-9 h-9 flex items-center justify-center border border-white/20 ${page <= 1 ? 'pointer-events-none opacity-30' : 'hover:border-gold hover:text-gold'}`}
+        className={`w-9 h-9 flex items-center justify-center border border-foreground/20 ${page <= 1 ? 'pointer-events-none opacity-30' : 'hover:border-gold hover:text-gold'}`}
       >
         ‹
       </Link>
@@ -35,7 +35,7 @@ export function Pagination({
           key={p}
           href={hrefFor(p)}
           className={`w-9 h-9 flex items-center justify-center border text-sm ${
-            p === page ? 'border-gold text-gold' : 'border-white/20 hover:border-gold hover:text-gold'
+            p === page ? 'border-gold text-gold' : 'border-foreground/20 hover:border-gold hover:text-gold'
           }`}
         >
           {p}
@@ -44,7 +44,7 @@ export function Pagination({
       <Link
         href={hrefFor(Math.min(totalPages, page + 1))}
         aria-disabled={page >= totalPages}
-        className={`w-9 h-9 flex items-center justify-center border border-white/20 ${page >= totalPages ? 'pointer-events-none opacity-30' : 'hover:border-gold hover:text-gold'}`}
+        className={`w-9 h-9 flex items-center justify-center border border-foreground/20 ${page >= totalPages ? 'pointer-events-none opacity-30' : 'hover:border-gold hover:text-gold'}`}
       >
         ›
       </Link>

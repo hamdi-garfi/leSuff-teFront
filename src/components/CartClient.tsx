@@ -89,7 +89,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
   if (!cart || cart.items.length === 0) {
     return (
       <div className="text-center py-24">
-        <p className="text-white/50 mb-6">Votre panier est vide.</p>
+        <p className="text-foreground/50 mb-6">Votre panier est vide.</p>
         <Link href="/collection" className="btn-gold">
           DÉCOUVRIR LA COLLECTION
         </Link>
@@ -99,26 +99,26 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
 
   return (
     <div className="grid md:grid-cols-3 gap-12">
-      <div className="md:col-span-2 divide-y divide-white/10">
+      <div className="md:col-span-2 divide-y divide-foreground/10">
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-4 py-6" style={{ opacity: isPending ? 0.6 : 1 }}>
             <div
               className="w-20 h-24 shrink-0 flex items-center justify-center"
               style={{ background: `linear-gradient(155deg, ${colorToHex(item.variant.color)} 0%, #0a0a0a 130%)` }}
             >
-              <span className="font-serif text-2xl text-white/20">{item.product.name.charAt(0)}</span>
+              <span className="font-serif text-2xl text-foreground/20">{item.product.name.charAt(0)}</span>
             </div>
             <div className="flex-1">
               <Link href={`/produit/${item.product.slug}`} className="text-sm hover:text-gold transition">
                 {item.product.name}
               </Link>
-              <p className="text-xs text-white/40 mt-1">
+              <p className="text-xs text-foreground/40 mt-1">
                 Taille {item.variant.size} · {item.variant.color}
               </p>
               <p className="text-sm mt-2">{item.unitPrice.toFixed(2)} €</p>
 
               <div className="flex items-center gap-3 mt-3">
-                <div className="flex items-center border border-white/30">
+                <div className="flex items-center border border-foreground/30">
                   <button
                     type="button"
                     className="w-7 h-7 hover:text-gold"
@@ -135,7 +135,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
                     +
                   </button>
                 </div>
-                <button type="button" className="text-xs text-white/40 hover:text-red-400" onClick={() => removeItem(item.id)}>
+                <button type="button" className="text-xs text-foreground/40 hover:text-red-400" onClick={() => removeItem(item.id)}>
                   Retirer
                 </button>
               </div>
@@ -145,18 +145,18 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
         ))}
       </div>
 
-      <div className="border border-white/10 p-6 h-fit">
-        <h2 className="text-xs tracking-widest2 text-white/60 mb-4">RÉSUMÉ</h2>
+      <div className="border border-foreground/10 p-6 h-fit">
+        <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">RÉSUMÉ</h2>
         <div className="flex justify-between text-sm mb-2">
           <span>Sous-total</span>
           <span>{cart.total.toFixed(2)} €</span>
         </div>
 
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">PAYS DE LIVRAISON</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">PAYS DE LIVRAISON</label>
         <select
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
         >
           <option value="">Choisir un pays…</option>
           {shippingZones.map((zone) => (
@@ -166,7 +166,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           ))}
         </select>
 
-        <div className="flex justify-between text-sm mb-4 text-white/50">
+        <div className="flex justify-between text-sm mb-4 text-foreground/50">
           <span>Livraison{selectedZone && cart.total < FREE_SHIPPING_THRESHOLD ? ` (${selectedZone.estimatedDaysMin}–${selectedZone.estimatedDaysMax}j)` : ''}</span>
           <span>
             {shippingCost === null
@@ -178,27 +178,27 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
                 : `${shippingCost.toFixed(2)} €`}
           </span>
         </div>
-        <div className="flex justify-between text-base border-t border-white/10 pt-4 mb-6">
+        <div className="flex justify-between text-base border-t border-foreground/10 pt-4 mb-6">
           <span>Total</span>
           <span>{(cart.total + (shippingCost ?? 0)).toFixed(2)} €</span>
         </div>
 
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">CODE PROMO</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CODE PROMO</label>
         <input
           type="text"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           placeholder="BIENVENUE10"
-          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
         />
 
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">CARTE CADEAU</label>
+        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CARTE CADEAU</label>
         <input
           type="text"
           value={giftCardCode}
           onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
           placeholder="XXXX-XXXX-XXXX"
-          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
         />
 
         <button type="button" onClick={handleCheckout} disabled={checkoutLoading} className="btn-gold w-full disabled:opacity-50">

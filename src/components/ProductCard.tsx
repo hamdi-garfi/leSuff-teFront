@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: Product }) {
             )}
           </>
         ) : (
-          <span className="font-serif text-5xl text-white/15 group-hover:text-gold/25 transition-colors select-none">
+          <span className="font-serif text-5xl text-foreground/15 group-hover:text-gold/25 transition-colors select-none">
             {product.name.charAt(0)}
           </span>
         )}
@@ -59,13 +59,13 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
       <div className="pt-3">
-        <h3 className="text-sm text-white/90 group-hover:text-gold transition">{product.name}</h3>
+        <h3 className="text-sm text-foreground/90 group-hover:text-gold transition">{product.name}</h3>
         <p className="text-sm mt-0.5">
-          <span className={onSale ? 'text-gold font-semibold' : 'text-white/60'}>{product.basePrice.toFixed(2)} €</span>
-          {onSale && <span className="text-white/40 line-through ml-2 text-xs">{product.compareAtPrice!.toFixed(2)} €</span>}
+          <span className={onSale ? 'text-gold font-semibold' : 'text-foreground/60'}>{product.basePrice.toFixed(2)} €</span>
+          {onSale && <span className="text-foreground/40 line-through ml-2 text-xs">{product.compareAtPrice!.toFixed(2)} €</span>}
         </p>
         <span
-          className="inline-block w-3 h-3 rounded-full border border-white/30 mt-2"
+          className="inline-block w-3 h-3 rounded-full border border-foreground/30 mt-2"
           style={{ backgroundColor: colorToHex(color) }}
           title={color}
         />

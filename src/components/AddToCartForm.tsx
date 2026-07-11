@@ -46,13 +46,13 @@ export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
   }
 
   if (variants.every((v) => v.stock === 0)) {
-    return <p className="text-white/50 text-sm">Rupture de stock sur toutes les tailles.</p>;
+    return <p className="text-foreground/50 text-sm">Rupture de stock sur toutes les tailles.</p>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <span className="text-xs tracking-widest2 text-white/60 block mb-2">TAILLE</span>
+        <span className="text-xs tracking-widest2 text-foreground/60 block mb-2">TAILLE</span>
         <div className="flex flex-wrap gap-2">
           {variants.map((variant) => (
             <button
@@ -64,8 +64,8 @@ export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
                 selectedId === variant.id
                   ? 'border-gold text-gold'
                   : variant.stock === 0
-                    ? 'border-white/10 text-white/25 line-through cursor-not-allowed'
-                    : 'border-white/30 text-white/80 hover:border-white/60'
+                    ? 'border-foreground/10 text-foreground/25 line-through cursor-not-allowed'
+                    : 'border-foreground/30 text-foreground/80 hover:border-foreground/60'
               }`}
             >
               {variant.size}
@@ -75,8 +75,8 @@ export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <span className="text-xs tracking-widest2 text-white/60">QUANTITÉ</span>
-        <div className="flex items-center border border-white/30">
+        <span className="text-xs tracking-widest2 text-foreground/60">QUANTITÉ</span>
+        <div className="flex items-center border border-foreground/30">
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}

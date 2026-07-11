@@ -2,10 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --surface: 10 10 10;
+  --surface-2: 20 20 20;
+  --foreground: 255 255 255;
+}
+
+[data-theme='light'] {
+  --surface: 250 248 244;
+  --surface-2: 255 255 255;
+  --foreground: 23 23 27;
+}
+
 @layer base {
   body {
-    @apply bg-ink text-white antialiased;
+    @apply bg-surface text-foreground antialiased transition-colors duration-300;
   }
+}
+
+[data-theme='light'] .mountain-backdrop {
+  display: none;
 }
 
 @layer components {
@@ -13,7 +29,7 @@
     @apply inline-flex items-center justify-center bg-gradient-to-br from-gold-light to-gold-dark text-ink font-semibold px-6 py-3 tracking-wide transition hover:brightness-110;
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center border border-white/30 text-white px-6 py-3 tracking-wide transition hover:border-gold hover:text-gold;
+    @apply inline-flex items-center justify-center border border-foreground/30 text-foreground px-6 py-3 tracking-wide transition hover:border-gold hover:text-gold;
   }
   .section-title {
     @apply font-serif text-3xl md:text-4xl text-center tracking-wide;
