@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/catalog';
+import { getHomepageSettings } from '@/lib/homepage';
 import { ProductCard } from '@/components/ProductCard';
 import { MountainBackdrop } from '@/components/MountainBackdrop';
 
@@ -12,8 +13,12 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [categories, products] = await Promise.all([getCategories(), getProducts({ limit: 5 })]);
-  const bestSellers = products.items;
+  const [categories, homepage, featured] = await Promise.all([
+    getCategories(),
+    getHomepageSettings(),
+    getProducts({ featured: true, limit: 5 }),
+  ]);
+  const bestSellers = featured.items.length > 0 ? featured.items : (await getProducts({ limit: 5 })).items;
 
   return (
     <div>
@@ -22,18 +27,10 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6 md:px-8 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <p className="text-gold text-xs tracking-widest2 mb-4">FORCE. STYLE. HÉRITAGE.</p>
-            <h1 className="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">
-              LE SUFFÈTE
-              <br />
-              CLASSIC
-            </h1>
-            <p className="text-foreground/60 mb-8 max-w-sm">
-              L&apos;élégance affirmée.
-              <br />
-              L&apos;héritage qui inspire.
-            </p>
-            <Link href="/collection" className="btn-gold">
-              DÉCOUVRIR LA COLLECTION
+            <h1 className="font-serif text-5xl md:text-6xl leading-[1.05] mb-6">{homepage.heroTitle}</h1>
+            <p className="text-foreground/60 mb-8 max-w-sm whitespace-pre-line">{homepage.heroSubtitle}</p>
+            <Link href={homepage.heroButtonLink} className="btn-gold">
+              {homepage.heroButtonLabel}
             </Link>
           </div>
           <div className="relative aspect-square rounded-full mx-auto w-full max-w-md flex items-center justify-center border border-gold/20">

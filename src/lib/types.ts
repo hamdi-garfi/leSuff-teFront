@@ -75,3 +75,12 @@ export type ShippingZone = {
   estimatedDaysMax: number;
   active: boolean;
 };
+
+export type HomepageSettings = {
+  heroTitle: string;
+  heroSubtitle: string;
+  heroButtonLabel: string;
+  heroButtonLink: string;
+  promoBannerText: string;
+  promoBannerEnabled: boolean;
+};

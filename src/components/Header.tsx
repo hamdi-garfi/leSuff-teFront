@@ -1,17 +1,20 @@
 import Link from 'next/link';
 import { Logo, Wordmark } from '@/components/Logo';
 import { getCategories } from '@/lib/catalog';
+import { getHomepageSettings } from '@/lib/homepage';
 import type { CurrentUser } from '@/lib/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
-  const categories = await getCategories();
+  const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
 
   return (
     <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-foreground/10">
-      <div className="bg-gold-dark/90 text-ink text-[11px] tracking-widest2 text-center py-1.5 px-4">
-        LIVRAISON OFFERTE DÈS 80€ D&apos;ACHAT
-      </div>
+      {homepage.promoBannerEnabled && (
+        <div className="bg-gold-dark/90 text-ink text-[11px] tracking-widest2 text-center py-1.5 px-4">
+          {homepage.promoBannerText}
+        </div>
+      )}
 
       <div className="mx-auto max-w-7xl px-4 md:px-8 py-4 flex items-center justify-between gap-4">
         <nav className="hidden md:flex items-center gap-6 text-xs tracking-widest2 uppercase flex-1">
