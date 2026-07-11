@@ -20,8 +20,12 @@ export type Product = {
   slug: string;
   description: string | null;
   basePrice: number;
+  compareAtPrice: number | null;
   isPublished: boolean;
   imageUrl: string | null;
+  galleryImages: string[];
+  productType: string | null;
+  tags: string[];
   category: { id: number; name: string; slug: string };
   variants: ProductVariant[];
 };

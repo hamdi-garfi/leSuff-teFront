@@ -48,7 +48,12 @@ export function LoginForm() {
         />
       </div>
       <div>
-        <label className="text-xs tracking-widest2 text-white/60 block mb-2">MOT DE PASSE</label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs tracking-widest2 text-white/60">MOT DE PASSE</label>
+          <Link href="/compte/mot-de-passe-oublie" className="text-xs text-white/40 hover:text-gold">
+            Oublié ?
+          </Link>
+        </div>
         <input
           type="password"
           required

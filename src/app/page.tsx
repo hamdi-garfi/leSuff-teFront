@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/catalog';
 import { ProductCard } from '@/components/ProductCard';
 
@@ -35,9 +36,7 @@ export default async function HomePage() {
           </div>
           <div className="relative aspect-square rounded-full mx-auto w-full max-w-md flex items-center justify-center border border-gold/20">
             <div className="absolute inset-6 rounded-full border border-gold/10" />
-            <span className="font-serif text-[8rem] leading-none bg-gradient-to-b from-gold-light to-gold-dark bg-clip-text text-transparent select-none">
-              S
-            </span>
+            <Image src="/logo.png" alt="Le Suffète" width={420} height={420} className="object-contain relative z-10 p-8" priority />
           </div>
         </div>
       </section>

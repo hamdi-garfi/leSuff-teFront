@@ -22,6 +22,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
   }
 
   const color = product.variants[0]?.color ?? '';
+  const onSale = product.compareAtPrice !== null && product.compareAtPrice > product.basePrice;
+  const discountPct = onSale ? Math.round((1 - product.basePrice / product.compareAtPrice!) * 100) : 0;
   const [relatedResult, reviews, user] = await Promise.all([
     getProducts({ category: product.category.slug, limit: 5 }),
     getProductReviews(product.id),
@@ -44,7 +46,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
       <div className="grid md:grid-cols-2 gap-12">
         <div
-          className="aspect-square flex items-center justify-center overflow-hidden"
+          className="aspect-square flex items-center justify-center overflow-hidden relative"
           style={product.imageUrl ? undefined : { background: `linear-gradient(155deg, ${colorToHex(color)} 0%, #0a0a0a 130%)` }}
         >
           {product.imageUrl ? (
@@ -52,6 +54,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
           ) : (
             <span className="font-serif text-9xl text-white/10 select-none">{product.name.charAt(0)}</span>
+          )}
+          {onSale && (
+            <span className="absolute top-4 left-4 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-xs font-bold px-3 py-1.5 tracking-wide">
+              -{discountPct}%
+            </span>
           )}
         </div>
 
@@ -66,7 +73,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
               </span>
             </div>
           )}
-          <p className="text-2xl text-white/90 mb-6">{product.basePrice.toFixed(2)} €</p>
+          <p className="text-2xl mb-6">
+            <span className={onSale ? 'text-gold font-semibold' : 'text-white/90'}>{product.basePrice.toFixed(2)} €</span>
+            {onSale && <span className="text-white/40 line-through ml-3 text-lg">{product.compareAtPrice!.toFixed(2)} €</span>}
+          </p>
           {product.description && <p className="text-white/60 mb-8 leading-relaxed">{product.description}</p>}
 
           <AddToCartForm variants={product.variants} />
