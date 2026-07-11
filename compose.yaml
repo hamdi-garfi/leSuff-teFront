@@ -1,0 +1,21 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
+    environment:
+      BACKEND_INTERNAL_URL: http://app:8000
+      NODE_ENV: production
+      # Set to "true" only once served over real HTTPS (reverse proxy / real domain).
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - "${FRONT_PORT:-3000}:3000"
+    networks:
+      - lesuffete-network
+
+networks:
+  lesuffete-network:
+    name: lesuffete-network
+    external: true

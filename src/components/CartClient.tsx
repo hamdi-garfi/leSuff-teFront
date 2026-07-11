@@ -1,0 +1,157 @@
+'use client';
+
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import type { Cart } from '@/lib/types';
+
+export function CartClient({ initialCart }: { initialCart: Cart | null }) {
+  const router = useRouter();
+  const [cart, setCart] = useState(initialCart);
+  const [isPending, startTransition] = useTransition();
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+
+  async function updateQuantity(itemId: number, quantity: number) {
+    const res = await fetch(`/api/cart/items/${itemId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quantity }),
+    });
+    if (res.ok) {
+      setCart(await res.json());
+      startTransition(() => router.refresh());
+    }
+  }
+
+  async function removeItem(itemId: number) {
+    const res = await fetch(`/api/cart/items/${itemId}`, { method: 'DELETE' });
+    if (res.ok) {
+      setCart(await res.json());
+      startTransition(() => router.refresh());
+    }
+  }
+
+  async function handleCheckout() {
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(couponCode ? { couponCode } : {}),
+    });
+    const data = await res.json();
+
+    if (res.status === 401) {
+      router.push('/compte/connexion?next=panier');
+      return;
+    }
+
+    if (!res.ok) {
+      setCheckoutError(data.error ?? 'Le paiement est momentanément indisponible.');
+      setCheckoutLoading(false);
+      return;
+    }
+
+    const discountParam = data.discount > 0 ? `&discount=${data.discount}` : '';
+
+    if (data.clientSecret) {
+      router.push(
+        `/commande/paiement?client_secret=${encodeURIComponent(data.clientSecret)}&number=${encodeURIComponent(data.number)}${discountParam}`,
+      );
+      return;
+    }
+
+    router.push(`/commande/confirmation?number=${encodeURIComponent(data.number)}${discountParam}`);
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="text-center py-24">
+        <p className="text-white/50 mb-6">Votre panier est vide.</p>
+        <Link href="/collection" className="btn-gold">
+          DÉCOUVRIR LA COLLECTION
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid md:grid-cols-3 gap-12">
+      <div className="md:col-span-2 divide-y divide-white/10">
+        {cart.items.map((item) => (
+          <div key={item.id} className="flex gap-4 py-6" style={{ opacity: isPending ? 0.6 : 1 }}>
+            <div className="w-20 h-24 bg-panel shrink-0 flex items-center justify-center">
+              <span className="font-serif text-2xl text-white/20">{item.product.name.charAt(0)}</span>
+            </div>
+            <div className="flex-1">
+              <Link href={`/produit/${item.product.slug}`} className="text-sm hover:text-gold transition">
+                {item.product.name}
+              </Link>
+              <p className="text-xs text-white/40 mt-1">
+                Taille {item.variant.size} · {item.variant.color}
+              </p>
+              <p className="text-sm mt-2">{item.unitPrice.toFixed(2)} €</p>
+
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex items-center border border-white/30">
+                  <button
+                    type="button"
+                    className="w-7 h-7 hover:text-gold"
+                    onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                  >
+                    −
+                  </button>
+                  <span className="w-8 text-center text-sm">{item.quantity}</span>
+                  <button
+                    type="button"
+                    className="w-7 h-7 hover:text-gold"
+                    onClick={() => updateQuantity(item.id, Math.min(item.variant.stock, item.quantity + 1))}
+                  >
+                    +
+                  </button>
+                </div>
+                <button type="button" className="text-xs text-white/40 hover:text-red-400" onClick={() => removeItem(item.id)}>
+                  Retirer
+                </button>
+              </div>
+            </div>
+            <p className="text-sm">{item.lineTotal.toFixed(2)} €</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="border border-white/10 p-6 h-fit">
+        <h2 className="text-xs tracking-widest2 text-white/60 mb-4">RÉSUMÉ</h2>
+        <div className="flex justify-between text-sm mb-2">
+          <span>Sous-total</span>
+          <span>{cart.total.toFixed(2)} €</span>
+        </div>
+        <div className="flex justify-between text-sm mb-4 text-white/50">
+          <span>Livraison</span>
+          <span>{cart.total >= 80 ? 'Offerte' : 'Calculée au paiement'}</span>
+        </div>
+        <div className="flex justify-between text-base border-t border-white/10 pt-4 mb-6">
+          <span>Total</span>
+          <span>{cart.total.toFixed(2)} €</span>
+        </div>
+
+        <label className="text-xs tracking-widest2 text-white/60 block mb-2">CODE PROMO</label>
+        <input
+          type="text"
+          value={couponCode}
+          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+          placeholder="BIENVENUE10"
+          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+        />
+
+        <button type="button" onClick={handleCheckout} disabled={checkoutLoading} className="btn-gold w-full disabled:opacity-50">
+          {checkoutLoading ? 'Traitement…' : 'PASSER COMMANDE'}
+        </button>
+        {checkoutError && <p className="mt-3 text-sm text-red-400">{checkoutError}</p>}
+      </div>
+    </div>
+  );
+}
