@@ -66,3 +66,12 @@ export type CurrentUser = {
   lastName: string;
   roles: string[];
 };
+
+export type ShippingZone = {
+  id: number;
+  country: string;
+  price: number;
+  estimatedDaysMin: number;
+  estimatedDaysMax: number;
+  active: boolean;
+};

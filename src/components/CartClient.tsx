@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import type { Cart } from '@/lib/types';
+import type { Cart, ShippingZone } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 
-export function CartClient({ initialCart }: { initialCart: Cart | null }) {
+const FREE_SHIPPING_THRESHOLD = 80;
+
+export function CartClient({ initialCart, shippingZones }: { initialCart: Cart | null; shippingZones: ShippingZone[] }) {
   const router = useRouter();
   const [cart, setCart] = useState(initialCart);
   const [isPending, startTransition] = useTransition();
@@ -14,6 +16,10 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [giftCardCode, setGiftCardCode] = useState('');
+  const [country, setCountry] = useState('');
+
+  const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
+  const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
 
   async function updateQuantity(itemId: number, quantity: number) {
     const res = await fetch(`/api/cart/items/${itemId}`, {
@@ -36,6 +42,11 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
   }
 
   async function handleCheckout() {
+    if (!country) {
+      setCheckoutError('Choisis un pays de livraison.');
+      return;
+    }
+
     setCheckoutLoading(true);
     setCheckoutError(null);
 
@@ -43,6 +54,7 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        country,
         ...(couponCode ? { couponCode } : {}),
         ...(giftCardCode ? { giftCardCode } : {}),
       }),
@@ -139,13 +151,36 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
           <span>Sous-total</span>
           <span>{cart.total.toFixed(2)} €</span>
         </div>
+
+        <label className="text-xs tracking-widest2 text-white/60 block mb-2">PAYS DE LIVRAISON</label>
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+        >
+          <option value="">Choisir un pays…</option>
+          {shippingZones.map((zone) => (
+            <option key={zone.id} value={zone.country}>
+              {zone.country}
+            </option>
+          ))}
+        </select>
+
         <div className="flex justify-between text-sm mb-4 text-white/50">
-          <span>Livraison</span>
-          <span>{cart.total >= 80 ? 'Offerte' : 'Calculée au paiement'}</span>
+          <span>Livraison{selectedZone && cart.total < FREE_SHIPPING_THRESHOLD ? ` (${selectedZone.estimatedDaysMin}–${selectedZone.estimatedDaysMax}j)` : ''}</span>
+          <span>
+            {shippingCost === null
+              ? cart.total >= FREE_SHIPPING_THRESHOLD
+                ? 'Offerte'
+                : 'Choisir un pays'
+              : shippingCost === 0
+                ? 'Offerte'
+                : `${shippingCost.toFixed(2)} €`}
+          </span>
         </div>
         <div className="flex justify-between text-base border-t border-white/10 pt-4 mb-6">
           <span>Total</span>
-          <span>{cart.total.toFixed(2)} €</span>
+          <span>{(cart.total + (shippingCost ?? 0)).toFixed(2)} €</span>
         </div>
 
         <label className="text-xs tracking-widest2 text-white/60 block mb-2">CODE PROMO</label>

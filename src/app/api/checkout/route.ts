@@ -8,6 +8,8 @@ type CheckoutResponse = {
   status: string;
   subtotal: number;
   discount: number;
+  shippingCountry: string | null;
+  shippingCost: number;
   couponCode: string | null;
   giftCardAmountUsed: number | null;
   total: number;
@@ -21,12 +23,15 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = await request.json().catch(() => ({}));
-  const body: { couponCode?: string; giftCardCode?: string } = {};
+  const body: { couponCode?: string; giftCardCode?: string; country?: string } = {};
   if (typeof payload.couponCode === 'string' && payload.couponCode.trim() !== '') {
     body.couponCode = payload.couponCode.trim();
   }
   if (typeof payload.giftCardCode === 'string' && payload.giftCardCode.trim() !== '') {
     body.giftCardCode = payload.giftCardCode.trim();
+  }
+  if (typeof payload.country === 'string' && payload.country.trim() !== '') {
+    body.country = payload.country.trim();
   }
 
   try {
