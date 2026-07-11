@@ -39,6 +39,13 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
           >
             {user ? user.firstName : 'Connexion'}
           </Link>
+          <Link
+            href={user ? '/compte' : '/compte/connexion'}
+            className="hover:text-gold transition sm:hidden"
+            aria-label="Mon compte"
+          >
+            <UserIcon />
+          </Link>
           <Link href="/panier" className="relative hover:text-gold transition" aria-label="Panier">
             <CartIcon />
             {cartCount > 0 && (
@@ -61,6 +68,15 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         ))}
       </nav>
     </header>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6" />
+    </svg>
   );
 }
 

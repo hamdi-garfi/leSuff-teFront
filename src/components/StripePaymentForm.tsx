@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 
-export function StripePaymentForm({ orderNumber }: { orderNumber: string }) {
+export function StripePaymentForm({
+  orderNumber,
+  discount,
+  giftCard,
+}: {
+  orderNumber: string;
+  discount?: string;
+  giftCard?: string;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -18,10 +26,12 @@ export function StripePaymentForm({ orderNumber }: { orderNumber: string }) {
     setLoading(true);
     setError(null);
 
+    const extraParams = (discount ? `&discount=${discount}` : '') + (giftCard ? `&giftCard=${giftCard}` : '');
+
     const { error: confirmError } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/commande/confirmation?number=${encodeURIComponent(orderNumber)}`,
+        return_url: `${window.location.origin}/commande/confirmation?number=${encodeURIComponent(orderNumber)}${extraParams}`,
       },
     });
 

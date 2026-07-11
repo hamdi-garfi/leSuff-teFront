@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Cart } from '@/lib/types';
+import { colorToHex } from '@/lib/colors';
 
 export function CartClient({ initialCart }: { initialCart: Cart | null }) {
   const router = useRouter();
@@ -12,6 +13,7 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [giftCardCode, setGiftCardCode] = useState('');
 
   async function updateQuantity(itemId: number, quantity: number) {
     const res = await fetch(`/api/cart/items/${itemId}`, {
@@ -40,7 +42,10 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(couponCode ? { couponCode } : {}),
+      body: JSON.stringify({
+        ...(couponCode ? { couponCode } : {}),
+        ...(giftCardCode ? { giftCardCode } : {}),
+      }),
     });
     const data = await res.json();
 
@@ -55,16 +60,18 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
       return;
     }
 
-    const discountParam = data.discount > 0 ? `&discount=${data.discount}` : '';
+    const extraParams =
+      (data.discount > 0 ? `&discount=${data.discount}` : '') +
+      (data.giftCardAmountUsed > 0 ? `&giftCard=${data.giftCardAmountUsed}` : '');
 
     if (data.clientSecret) {
       router.push(
-        `/commande/paiement?client_secret=${encodeURIComponent(data.clientSecret)}&number=${encodeURIComponent(data.number)}${discountParam}`,
+        `/commande/paiement?client_secret=${encodeURIComponent(data.clientSecret)}&number=${encodeURIComponent(data.number)}${extraParams}`,
       );
       return;
     }
 
-    router.push(`/commande/confirmation?number=${encodeURIComponent(data.number)}${discountParam}`);
+    router.push(`/commande/confirmation?number=${encodeURIComponent(data.number)}${extraParams}`);
   }
 
   if (!cart || cart.items.length === 0) {
@@ -83,7 +90,10 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
       <div className="md:col-span-2 divide-y divide-white/10">
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-4 py-6" style={{ opacity: isPending ? 0.6 : 1 }}>
-            <div className="w-20 h-24 bg-panel shrink-0 flex items-center justify-center">
+            <div
+              className="w-20 h-24 shrink-0 flex items-center justify-center"
+              style={{ background: `linear-gradient(155deg, ${colorToHex(item.variant.color)} 0%, #0a0a0a 130%)` }}
+            >
               <span className="font-serif text-2xl text-white/20">{item.product.name.charAt(0)}</span>
             </div>
             <div className="flex-1">
@@ -144,6 +154,15 @@ export function CartClient({ initialCart }: { initialCart: Cart | null }) {
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           placeholder="BIENVENUE10"
+          className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+        />
+
+        <label className="text-xs tracking-widest2 text-white/60 block mb-2">CARTE CADEAU</label>
+        <input
+          type="text"
+          value={giftCardCode}
+          onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+          placeholder="XXXX-XXXX-XXXX"
           className="w-full bg-panel border border-white/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
         />
 

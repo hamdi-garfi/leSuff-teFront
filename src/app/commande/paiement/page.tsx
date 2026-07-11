@@ -21,6 +21,8 @@ function PaymentPageContent() {
   const searchParams = useSearchParams();
   const clientSecret = searchParams.get('client_secret');
   const number = searchParams.get('number') ?? '';
+  const discount = searchParams.get('discount') ?? undefined;
+  const giftCard = searchParams.get('giftCard') ?? undefined;
 
   const options = useMemo(() => (clientSecret ? { clientSecret } : undefined), [clientSecret]);
 
@@ -44,9 +46,12 @@ function PaymentPageContent() {
     <div className="mx-auto max-w-md px-6 md:px-8 py-16">
       <h1 className="section-title">PAIEMENT</h1>
       <div className="section-title-underline" />
-      <p className="text-center text-white/50 text-sm mb-8">Commande {number}</p>
+      <p className="text-center text-white/50 text-sm mb-2">Commande {number}</p>
+      {discount && <p className="text-center text-gold text-xs mb-1">Réduction appliquée : -{discount} €</p>}
+      {giftCard && <p className="text-center text-gold text-xs mb-1">Carte cadeau utilisée : -{giftCard} €</p>}
+      <div className="mb-6" />
       <Elements stripe={stripePromise} options={options}>
-        <StripePaymentForm orderNumber={number} />
+        <StripePaymentForm orderNumber={number} discount={discount} giftCard={giftCard} />
       </Elements>
     </div>
   );

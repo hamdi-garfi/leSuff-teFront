@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getCurrentUser } from '@/lib/session';
 import { getMyOrders } from '@/lib/orders';
 import { LogoutButton } from '@/components/LogoutButton';
@@ -33,7 +34,12 @@ export default async function AccountPage() {
           </p>
           <p className="text-sm text-white/50">{user.email}</p>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-6">
+          <Link href="/compte/adresses" className="text-xs tracking-widest2 hover:text-gold transition">
+            MES ADRESSES
+          </Link>
+          <LogoutButton />
+        </div>
       </div>
 
       <h2 className="text-xs tracking-widest2 text-white/60 mb-4">MES COMMANDES</h2>

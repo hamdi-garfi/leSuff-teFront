@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { backendFetch, BackendError } from '@/lib/backend';
 import { getTokenFromCookies } from '@/lib/auth';
 
@@ -6,18 +6,31 @@ type CheckoutResponse = {
   id: number;
   number: string;
   status: string;
+  subtotal: number;
+  discount: number;
+  couponCode: string | null;
+  giftCardAmountUsed: number | null;
   total: number;
   clientSecret?: string;
 };
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const token = getTokenFromCookies();
   if (!token) {
     return NextResponse.json({ error: 'authentication required' }, { status: 401 });
   }
 
+  const payload = await request.json().catch(() => ({}));
+  const body: { couponCode?: string; giftCardCode?: string } = {};
+  if (typeof payload.couponCode === 'string' && payload.couponCode.trim() !== '') {
+    body.couponCode = payload.couponCode.trim();
+  }
+  if (typeof payload.giftCardCode === 'string' && payload.giftCardCode.trim() !== '') {
+    body.giftCardCode = payload.giftCardCode.trim();
+  }
+
   try {
-    const order = await backendFetch<CheckoutResponse>('/api/checkout', { method: 'POST', token });
+    const order = await backendFetch<CheckoutResponse>('/api/checkout', { method: 'POST', token, body });
     return NextResponse.json(order, { status: 201 });
   } catch (e) {
     if (e instanceof BackendError) {

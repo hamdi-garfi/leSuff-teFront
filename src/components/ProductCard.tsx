@@ -7,6 +7,7 @@ export function ProductCard({ product }: { product: Product }) {
   const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
   const onSale = product.compareAtPrice !== null && product.compareAtPrice > product.basePrice;
   const discountPct = onSale ? Math.round((1 - product.basePrice / product.compareAtPrice!) * 100) : 0;
+  const hoverImage = product.galleryImages[0];
 
   return (
     <Link href={`/produit/${product.slug}`} className="group block">
@@ -19,8 +20,23 @@ export function ProductCard({ product }: { product: Product }) {
         }
       >
         {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
+            />
+            {hoverImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={hoverImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 group-hover:opacity-100 transition-opacity duration-300"
+              />
+            )}
+          </>
         ) : (
           <span className="font-serif text-5xl text-white/15 group-hover:text-gold/25 transition-colors select-none">
             {product.name.charAt(0)}
