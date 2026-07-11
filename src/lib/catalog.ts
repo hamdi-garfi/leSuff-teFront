@@ -14,6 +14,7 @@ export type ProductQuery = {
   page?: number;
   limit?: number;
   featured?: boolean;
+  newArrivals?: boolean;
 };
 
 export async function getCategories(): Promise<Category[]> {
@@ -27,6 +28,7 @@ export async function getProducts(query: ProductQuery = {}): Promise<PaginatedPr
   if (query.page) params.set('page', String(query.page));
   if (query.limit) params.set('limit', String(query.limit));
   if (query.featured) params.set('featured', 'true');
+  if (query.newArrivals) params.set('newArrivals', 'true');
 
   const qs = params.toString();
   return backendFetch<PaginatedProducts>(`/api/products${qs ? `?${qs}` : ''}`, { next: { revalidate: 30 } });

@@ -13,13 +13,14 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [categories, homepage, featured, latest] = await Promise.all([
+  const [categories, homepage, featured, newArrivals] = await Promise.all([
     getCategories(),
     getHomepageSettings(),
     getProducts({ featured: true, limit: 5 }),
-    getProducts({ limit: 4 }),
+    getProducts({ newArrivals: true, limit: 4 }),
   ]);
   const bestSellers = featured.items.length > 0 ? featured.items : (await getProducts({ limit: 5 })).items;
+  const latest = newArrivals.items.length > 0 ? newArrivals.items : (await getProducts({ limit: 4 })).items;
 
   return (
     <div>
@@ -60,9 +61,18 @@ export default async function HomePage() {
             <Link key={category.id} href={`/collection/${category.slug}`} className="group block">
               <div
                 className="aspect-[3/4] overflow-hidden"
-                style={{ background: CATEGORY_GRADIENTS[category.slug] ?? 'linear-gradient(155deg,#222,#0a0a0a)' }}
+                style={category.imageUrl ? undefined : { background: CATEGORY_GRADIENTS[category.slug] ?? 'linear-gradient(155deg,#222,#0a0a0a)' }}
               >
-                <div className="w-full h-full transition-transform duration-500 group-hover:scale-[1.04]" />
+                {category.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={category.imageUrl}
+                    alt={category.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                ) : (
+                  <div className="w-full h-full transition-transform duration-500 group-hover:scale-[1.04]" />
+                )}
               </div>
               <div className="pt-3 text-center">
                 <h3 className="font-serif text-lg tracking-wide">{category.name.toUpperCase()}</h3>
@@ -75,12 +85,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {latest.items.length > 0 && (
+      {latest.length > 0 && (
         <section className="mx-auto max-w-7xl px-6 md:px-8 pb-24">
           <h2 className="section-title">NOUVEAUTÉS</h2>
           <div className="section-title-underline" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {latest.items.map((product) => (
+            {latest.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
