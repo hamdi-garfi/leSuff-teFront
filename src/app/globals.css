@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --surface: 10 10 10;
-  --surface-2: 20 20 20;
-  --foreground: 255 255 255;
+  --surface: 7 7 7;
+  --surface-2: 19 19 19;
+  --foreground: 242 239 232;
 }
 
 [data-theme='light'] {
@@ -26,7 +26,14 @@
 
 @layer components {
   .btn-gold {
-    @apply inline-flex items-center justify-center bg-gradient-to-br from-gold-light to-gold-dark text-ink font-semibold px-6 py-3 tracking-wide transition hover:brightness-110;
+    @apply inline-flex items-center justify-center bg-[#C5A24A] text-ink font-semibold tracking-wide rounded-[3px] transition-all duration-200;
+    height: 52px;
+    padding: 0 30px;
+    box-shadow: none;
+  }
+  .btn-gold:hover {
+    @apply bg-gold-light;
+    transform: translateY(-2px);
   }
   .btn-outline {
     @apply inline-flex items-center justify-center border border-foreground/30 text-foreground px-6 py-3 tracking-wide transition hover:border-gold hover:text-gold;
@@ -35,6 +42,6 @@
     @apply font-serif text-3xl md:text-4xl text-center tracking-wide;
   }
   .section-title-underline {
-    @apply mx-auto mt-3 mb-10 h-[2px] w-16 bg-gradient-to-r from-gold-light to-gold-dark;
+    @apply mx-auto mt-3 mb-10 h-[2px] w-16 bg-gold;
   }
 }

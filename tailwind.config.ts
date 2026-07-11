@@ -8,9 +8,9 @@ const config: Config = {
         ink: '#0a0a0a',
         panel: '#141414',
         gold: {
-          DEFAULT: '#c9a227',
-          light: '#f8e7a1',
-          dark: '#8a6d1d',
+          DEFAULT: '#C6A449',
+          light: '#E2C56A',
+          dark: '#B08F3D',
         },
         surface: 'rgb(var(--surface) / <alpha-value>)',
         surface2: 'rgb(var(--surface-2) / <alpha-value>)',

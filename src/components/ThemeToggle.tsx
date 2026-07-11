@@ -26,9 +26,10 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={theme === 'light' ? 'Passer au thème sombre' : 'Passer au thème clair'}
-      className="hover:text-gold transition"
+      className="flex items-center gap-1.5 border border-foreground/20 rounded-full px-2.5 py-1.5 text-[11px] tracking-wide uppercase hover:border-gold hover:text-gold transition"
     >
       {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+      <span className="hidden lg:inline">{theme === 'light' ? 'Clair' : 'Sombre'}</span>
     </button>
   );
 }

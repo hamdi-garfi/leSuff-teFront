@@ -77,6 +77,7 @@ export type ShippingZone = {
 };
 
 export type HomepageSettings = {
+  heroKicker: string;
   heroTitle: string;
   heroSubtitle: string;
   heroButtonLabel: string;

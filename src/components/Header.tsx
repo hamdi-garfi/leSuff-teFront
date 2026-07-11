@@ -5,6 +5,11 @@ import { getHomepageSettings } from '@/lib/homepage';
 import type { CurrentUser } from '@/lib/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
+const NAV_LABELS: Record<string, string> = {
+  'sweats-hoodies': 'Sweats',
+  't-shirts': 'T-shirts',
+};
+
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
   const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
 
@@ -16,33 +21,36 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 md:px-8 py-4 flex items-center justify-between gap-4">
-        <nav className="hidden md:flex items-center gap-6 text-xs tracking-widest2 uppercase flex-1">
-          <Link href="/" className="hover:text-gold transition">
+      <div className="mx-auto max-w-7xl px-6 md:px-10 h-[75px] flex items-center justify-between gap-6">
+        <nav className="hidden md:flex items-center gap-7 text-[13px] tracking-[0.06em] uppercase flex-1">
+          <Link href="/" className="hover:text-gold transition whitespace-nowrap">
             Accueil
           </Link>
-          <Link href="/collection" className="hover:text-gold transition">
+          <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
             Collection
           </Link>
           {categories.map((c) => (
-            <Link key={c.id} href={`/collection/${c.slug}`} className="hover:text-gold transition">
-              {c.name}
+            <Link key={c.id} href={`/collection/${c.slug}`} className="hover:text-gold transition whitespace-nowrap">
+              {NAV_LABELS[c.slug] ?? c.name}
             </Link>
           ))}
         </nav>
 
-        <Link href="/" className="flex items-center gap-3 shrink-0">
-          <Logo size={48} />
+        <Link href="/" className="flex items-center gap-3 shrink-0 px-2">
+          <Logo size={56} />
           <Wordmark className="hidden sm:flex" />
         </Link>
 
-        <div className="flex items-center gap-5 flex-1 justify-end">
+        <div className="flex items-center gap-6 flex-1 justify-end">
           <ThemeToggle />
+          <Link href="/collection" className="hover:text-gold transition" aria-label="Rechercher">
+            <SearchIcon />
+          </Link>
           <Link
             href={user ? '/compte' : '/compte/connexion'}
-            className="hover:text-gold transition text-xs tracking-widest2 uppercase hidden sm:inline"
+            className="hover:text-gold transition text-[13px] tracking-[0.06em] uppercase hidden sm:inline"
           >
-            {user ? user.firstName : 'Connexion'}
+            {user ? user.firstName : 'Compte'}
           </Link>
           <Link
             href={user ? '/compte' : '/compte/connexion'}
@@ -62,17 +70,26 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         </div>
       </div>
 
-      <nav className="md:hidden flex items-center gap-4 overflow-x-auto px-4 pb-3 text-xs tracking-widest2 uppercase">
+      <nav className="md:hidden flex items-center gap-4 overflow-x-auto px-4 pb-3 text-[13px] tracking-[0.06em] uppercase">
         <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
           Collection
         </Link>
         {categories.map((c) => (
           <Link key={c.id} href={`/collection/${c.slug}`} className="hover:text-gold transition whitespace-nowrap">
-            {c.name}
+            {NAV_LABELS[c.slug] ?? c.name}
           </Link>
         ))}
       </nav>
     </header>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="M20 20 15.3 15.3" />
+    </svg>
   );
 }
 

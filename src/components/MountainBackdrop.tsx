@@ -2,38 +2,26 @@ export function MountainBackdrop() {
   return (
     <svg
       aria-hidden="true"
-      className="mountain-backdrop absolute inset-0 w-full h-full pointer-events-none"
+      className="mountain-backdrop absolute inset-0 w-full h-full pointer-events-none opacity-[0.35]"
       viewBox="0 0 1600 800"
       preserveAspectRatio="xMidYMax slice"
     >
       <defs>
-        <radialGradient id="peakGlow" cx="72%" cy="55%" r="42%">
-          <stop offset="0%" stopColor="#c9a227" stopOpacity="0.16" />
-          <stop offset="60%" stopColor="#c9a227" stopOpacity="0.05" />
-          <stop offset="100%" stopColor="#c9a227" stopOpacity="0" />
-        </radialGradient>
         <linearGradient id="fadeToInk" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0a0a0a" stopOpacity="0" />
-          <stop offset="100%" stopColor="#0a0a0a" stopOpacity="1" />
+          <stop offset="0%" stopColor="#070707" stopOpacity="0" />
+          <stop offset="100%" stopColor="#070707" stopOpacity="1" />
         </linearGradient>
       </defs>
 
-      <rect x="0" y="0" width="1600" height="800" fill="url(#peakGlow)" />
-
       {/* back range */}
       <path
-        d="M0,560 L120,440 L230,510 L360,360 L470,470 L620,320 L760,480 L900,380 L1040,500 L1180,400 L1320,520 L1460,420 L1600,540 L1600,800 L0,800 Z"
-        fill="#171717"
-      />
-      {/* mid range */}
-      <path
-        d="M0,640 L150,520 L280,590 L400,470 L540,600 L680,480 L820,610 L960,510 L1100,620 L1250,500 L1400,610 L1600,530 L1600,800 L0,800 Z"
-        fill="#121212"
+        d="M0,600 L150,510 L280,560 L420,450 L560,540 L700,430 L840,550 L980,460 L1120,560 L1260,470 L1400,560 L1600,500 L1600,800 L0,800 Z"
+        fill="#111111"
       />
       {/* front range */}
       <path
-        d="M0,720 L180,620 L320,690 L480,600 L620,700 L800,610 L960,700 L1120,620 L1280,700 L1440,630 L1600,700 L1600,800 L0,800 Z"
-        fill="#0d0d0d"
+        d="M0,700 L200,630 L360,690 L520,620 L680,700 L860,630 L1020,700 L1180,640 L1360,700 L1600,660 L1600,800 L0,800 Z"
+        fill="#0a0a0a"
       />
 
       <rect x="0" y="600" width="1600" height="200" fill="url(#fadeToInk)" />

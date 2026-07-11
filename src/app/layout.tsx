@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Cormorant_Garamond, Montserrat } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getCart, getCurrentUser } from '@/lib/session';
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   variable: '--font-playfair',
   weight: ['500', '600', '700'],
 });
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-inter',
 });
@@ -26,7 +26,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const cartCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return (
-    <html lang="fr" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="fr" className={`${cormorant.variable} ${montserrat.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
