@@ -26,6 +26,11 @@ export type Product = {
   galleryImages: string[];
   productType: string | null;
   tags: string[];
+  videoUrl: string | null;
+  lengthCm: number | null;
+  widthCm: number | null;
+  heightCm: number | null;
+  shippingNote: string | null;
   category: { id: number; name: string; slug: string };
   variants: ProductVariant[];
 };
@@ -43,6 +48,15 @@ export type Cart = {
   id: number;
   items: CartItem[];
   total: number;
+};
+
+export type Address = {
+  id: number;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  complement: string | null;
 };
 
 export type CurrentUser = {

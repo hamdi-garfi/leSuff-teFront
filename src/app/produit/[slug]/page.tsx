@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/lib/session';
 import { colorToHex } from '@/lib/colors';
 import { AddToCartForm } from '@/components/AddToCartForm';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductGallery } from '@/components/ProductGallery';
 import { StarRating } from '@/components/StarRating';
 import { ReviewForm } from '@/components/ReviewForm';
 
@@ -45,22 +46,18 @@ export default async function ProductPage({ params }: { params: { slug: string }
       </p>
 
       <div className="grid md:grid-cols-2 gap-12">
-        <div
-          className="aspect-square flex items-center justify-center overflow-hidden relative"
-          style={product.imageUrl ? undefined : { background: `linear-gradient(155deg, ${colorToHex(color)} 0%, #0a0a0a 130%)` }}
-        >
-          {product.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-          ) : (
-            <span className="font-serif text-9xl text-white/10 select-none">{product.name.charAt(0)}</span>
-          )}
-          {onSale && (
-            <span className="absolute top-4 left-4 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-xs font-bold px-3 py-1.5 tracking-wide">
-              -{discountPct}%
-            </span>
-          )}
-        </div>
+        <ProductGallery
+          name={product.name}
+          images={[product.imageUrl, ...product.galleryImages].filter((src): src is string => Boolean(src))}
+          fallbackGradient={`linear-gradient(155deg, ${colorToHex(color)} 0%, #0a0a0a 130%)`}
+          badge={
+            onSale && (
+              <span className="absolute top-4 left-4 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-xs font-bold px-3 py-1.5 tracking-wide">
+                -{discountPct}%
+              </span>
+            )
+          }
+        />
 
         <div>
           <p className="text-xs tracking-widest2 text-gold mb-2">{product.category.name.toUpperCase()}</p>
@@ -86,9 +83,33 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <dt className="tracking-widest2">COULEUR</dt>
               <dd>{color}</dd>
             </div>
+            {(product.lengthCm || product.widthCm || product.heightCm) && (
+              <div className="flex gap-2">
+                <dt className="tracking-widest2">DIMENSIONS</dt>
+                <dd>
+                  {[product.lengthCm, product.widthCm, product.heightCm]
+                    .map((v) => (v !== null ? `${v} cm` : null))
+                    .filter(Boolean)
+                    .join(' × ')}
+                </dd>
+              </div>
+            )}
           </dl>
+
+          {product.shippingNote && (
+            <p className="mt-4 text-xs text-white/50 leading-relaxed">{product.shippingNote}</p>
+          )}
         </div>
       </div>
+
+      {product.videoUrl && (
+        <section className="mt-16 max-w-3xl">
+          <h2 className="section-title">VIDÉO PRODUIT</h2>
+          <div className="section-title-underline" />
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video src={product.videoUrl} controls playsInline className="w-full aspect-video bg-black/40" />
+        </section>
+      )}
 
       <section className="mt-24">
         <h2 className="section-title">AVIS CLIENTS</h2>
