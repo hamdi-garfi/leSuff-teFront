@@ -122,7 +122,7 @@ export function ProductCard({ product }: { product: Product }) {
                 disabled={variant.stock === 0 || addingId === variant.id}
                 onClick={() => quickAdd(variant.id)}
                 title={variant.stock === 0 ? 'Rupture' : `Ajouter — taille ${variant.size}`}
-                className={`min-w-[26px] h-7 px-1.5 text-[11px] border transition ${
+                className={`shrink-0 min-w-[26px] h-7 px-1.5 text-[11px] border transition ${
                   variant.stock === 0
                     ? 'border-white/20 text-white/30 line-through cursor-not-allowed'
                     : addedId === variant.id
