@@ -9,8 +9,9 @@ import { NAV_LABELS } from '@/lib/navLabels';
 import { WishlistHeaderLink } from '@/components/WishlistHeaderLink';
 import { RecentlyViewedHeaderLink } from '@/components/RecentlyViewedHeaderLink';
 import { SearchOverlay } from '@/components/SearchOverlay';
+import { CartHeaderButton } from '@/components/CartHeaderButton';
 
-export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
+export async function Header({ user }: { user: CurrentUser | null }) {
   const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
 
   const categoryProductLists = await Promise.all(
@@ -56,14 +57,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
           >
             <UserIcon />
           </Link>
-          <Link href="/panier" className="relative hover:text-gold transition" aria-label="Panier">
-            <CartIcon />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-gold text-ink text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          <CartHeaderButton />
         </div>
       </div>
 
@@ -86,17 +80,6 @@ function UserIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="8" r="3.5" />
       <path d="M4.5 20c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6" />
-    </svg>
-  );
-}
-
-function CartIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M6 6h15l-1.5 9h-12z" />
-      <path d="M6 6 5 3H2" />
-      <circle cx="9.5" cy="20" r="1" fill="currentColor" />
-      <circle cx="17.5" cy="20" r="1" fill="currentColor" />
     </svg>
   );
 }

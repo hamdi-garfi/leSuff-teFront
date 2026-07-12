@@ -5,6 +5,8 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getCart, getCurrentUser } from '@/lib/session';
 import { WishlistProvider } from '@/lib/WishlistContext';
+import { CartProvider } from '@/lib/CartContext';
+import { CartDrawer } from '@/components/CartDrawer';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -25,7 +27,6 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
-  const cartCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return (
     <html lang="fr" className={`${cormorant.variable} ${montserrat.variable}`}>
@@ -38,9 +39,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-sans">
         <WishlistProvider isAuthenticated={!!user}>
-          <Header cartCount={cartCount} user={user} />
-          <main>{children}</main>
-          <Footer />
+          <CartProvider isAuthenticated={!!user} initialCart={cart}>
+            <Header user={user} />
+            <main>{children}</main>
+            <Footer />
+            <CartDrawer />
+          </CartProvider>
         </WishlistProvider>
       </body>
     </html>

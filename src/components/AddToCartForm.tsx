@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ProductVariant } from '@/lib/types';
+import { useCart } from '@/lib/CartContext';
 
 export function AddToCartForm({ variants, basePrice }: { variants: ProductVariant[]; basePrice: number }) {
   const router = useRouter();
+  const { refresh: refreshCart, openDrawer } = useCart();
   const availableVariants = variants.filter((v) => v.stock > 0);
   const [selectedId, setSelectedId] = useState<number | null>(availableVariants[0]?.id ?? null);
   const [quantity, setQuantity] = useState(1);
@@ -42,6 +44,8 @@ export function AddToCartForm({ variants, basePrice }: { variants: ProductVarian
 
     setStatus('success');
     setMessage('Ajouté au panier.');
+    await refreshCart();
+    openDrawer();
     router.refresh();
   }
 

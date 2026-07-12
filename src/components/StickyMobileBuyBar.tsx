@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ProductVariant } from '@/lib/types';
+import { useCart } from '@/lib/CartContext';
 
 export function StickyMobileBuyBar({
   basePrice,
@@ -14,6 +15,7 @@ export function StickyMobileBuyBar({
   variants: ProductVariant[];
 }) {
   const router = useRouter();
+  const { refresh: refreshCart, openDrawer } = useCart();
   const available = variants.filter((v) => v.stock > 0);
   const [selectedId, setSelectedId] = useState<number | null>(available[0]?.id ?? null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'added'>('idle');
@@ -41,6 +43,8 @@ export function StickyMobileBuyBar({
       return;
     }
     setStatus('added');
+    await refreshCart();
+    openDrawer();
     router.refresh();
     setTimeout(() => setStatus('idle'), 1500);
   }

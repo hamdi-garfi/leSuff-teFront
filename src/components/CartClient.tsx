@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Cart, ShippingZone } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
-
-const FREE_SHIPPING_THRESHOLD = 80;
+import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
+import { useCart } from '@/lib/CartContext';
 
 export function CartClient({ initialCart, shippingZones }: { initialCart: Cart | null; shippingZones: ShippingZone[] }) {
   const router = useRouter();
+  const { refresh: refreshCartContext } = useCart();
   const [cart, setCart] = useState(initialCart);
   const [isPending, startTransition] = useTransition();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -29,6 +30,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
     });
     if (res.ok) {
       setCart(await res.json());
+      refreshCartContext();
       startTransition(() => router.refresh());
     }
   }
@@ -37,6 +39,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
     const res = await fetch(`/api/cart/items/${itemId}`, { method: 'DELETE' });
     if (res.ok) {
       setCart(await res.json());
+      refreshCartContext();
       startTransition(() => router.refresh());
     }
   }

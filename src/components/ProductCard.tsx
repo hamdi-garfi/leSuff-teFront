@@ -7,9 +7,11 @@ import type { Product } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { QuickViewModal } from '@/components/QuickViewModal';
 import { WishlistButton } from '@/components/WishlistButton';
+import { useCart } from '@/lib/CartContext';
 
 export function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
+  const { refresh: refreshCart, openDrawer } = useCart();
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
   const defaultColor = colors[0] ?? '';
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -38,6 +40,8 @@ export function ProductCard({ product }: { product: Product }) {
     if (!res.ok) return;
 
     setAddedId(variantId);
+    await refreshCart();
+    openDrawer();
     router.refresh();
     setTimeout(() => setAddedId(null), 1500);
   }
