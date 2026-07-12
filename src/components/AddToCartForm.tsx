@@ -63,7 +63,10 @@ export function AddToCartForm({ variants, basePrice }: { variants: ProductVarian
               key={variant.id}
               type="button"
               disabled={variant.stock === 0}
-              onClick={() => setSelectedId(variant.id)}
+              onClick={() => {
+                setSelectedId(variant.id);
+                setQuantity(1);
+              }}
               className={`shrink-0 min-w-[44px] h-11 px-3 border text-sm transition ${
                 selectedId === variant.id
                   ? 'border-gold text-gold'
