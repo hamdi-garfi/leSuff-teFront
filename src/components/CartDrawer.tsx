@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { colorToHex } from '@/lib/colors';
 import { useCart } from '@/lib/CartContext';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
+import { CartVariantPicker } from '@/components/CartVariantPicker';
 
 export function CartDrawer() {
   const router = useRouter();
@@ -41,6 +42,18 @@ export function CartDrawer() {
 
   async function removeItem(itemId: number) {
     const res = await fetch(`/api/cart/items/${itemId}`, { method: 'DELETE' });
+    if (res.ok) {
+      await refresh();
+      router.refresh();
+    }
+  }
+
+  async function updateVariant(itemId: number, variantId: number) {
+    const res = await fetch(`/api/cart/items/${itemId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variantId }),
+    });
     if (res.ok) {
       await refresh();
       router.refresh();
@@ -104,9 +117,13 @@ export function CartDrawer() {
                     <Link href={`/produit/${item.product.slug}`} onClick={closeDrawer} className="text-sm hover:text-gold transition line-clamp-1">
                       {item.product.name}
                     </Link>
-                    <p className="text-xs text-foreground/40 mt-0.5">
-                      Taille {item.variant.size} · {item.variant.color}
-                    </p>
+                    <div className="mt-0.5">
+                      <CartVariantPicker
+                        item={item}
+                        onChange={(variantId) => updateVariant(item.id, variantId)}
+                        className="bg-transparent border border-foreground/20 text-[11px] px-1 py-0.5 outline-none focus:border-gold"
+                      />
+                    </div>
                     <div className="flex items-center gap-2 mt-2">
                       <div className="flex items-center border border-foreground/30">
                         <button type="button" className="w-6 h-6 text-xs hover:text-gold" onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}>

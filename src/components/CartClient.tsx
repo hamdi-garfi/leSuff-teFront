@@ -7,6 +7,7 @@ import type { Cart, ShippingZone } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
 import { useCart } from '@/lib/CartContext';
+import { CartVariantPicker } from '@/components/CartVariantPicker';
 
 export function CartClient({ initialCart, shippingZones }: { initialCart: Cart | null; shippingZones: ShippingZone[] }) {
   const router = useRouter();
@@ -27,6 +28,19 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quantity }),
+    });
+    if (res.ok) {
+      setCart(await res.json());
+      refreshCartContext();
+      startTransition(() => router.refresh());
+    }
+  }
+
+  async function updateVariant(itemId: number, variantId: number) {
+    const res = await fetch(`/api/cart/items/${itemId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variantId }),
     });
     if (res.ok) {
       setCart(await res.json());
@@ -138,9 +152,9 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
               <Link href={`/produit/${item.product.slug}`} className="text-sm hover:text-gold transition">
                 {item.product.name}
               </Link>
-              <p className="text-xs text-foreground/40 mt-1">
-                Taille {item.variant.size} · {item.variant.color}
-              </p>
+              <div className="mt-1">
+                <CartVariantPicker item={item} onChange={(variantId) => updateVariant(item.id, variantId)} />
+              </div>
               <p className="text-sm mt-2">{item.unitPrice.toFixed(2)} €</p>
 
               <div className="flex items-center gap-3 mt-3">

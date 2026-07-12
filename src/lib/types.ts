@@ -53,6 +53,7 @@ export type CartItem = {
   lineTotal: number;
   variant: { id: number; sku: string; size: string; color: string; stock: number };
   product: { id: number; name: string; slug: string };
+  availableVariants: { id: number; size: string; color: string; stock: number }[];
 };
 
 export type Cart = {
