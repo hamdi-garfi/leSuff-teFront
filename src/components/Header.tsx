@@ -1,17 +1,23 @@
 import Link from 'next/link';
 import { Logo, Wordmark } from '@/components/Logo';
-import { getCategories } from '@/lib/catalog';
+import { getCategories, getProducts } from '@/lib/catalog';
 import { getHomepageSettings } from '@/lib/homepage';
-import type { CurrentUser } from '@/lib/types';
+import type { CurrentUser, Product } from '@/lib/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-const NAV_LABELS: Record<string, string> = {
-  'sweats-hoodies': 'Sweats',
-  't-shirts': 'T-shirts',
-};
+import { NavMegaMenu } from '@/components/NavMegaMenu';
+import { NAV_LABELS } from '@/lib/navLabels';
 
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
   const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
+
+  const categoryProductLists = await Promise.all(
+    categories.map(async (c) => {
+      const featured = await getProducts({ category: c.slug, featured: true, limit: 4 });
+      const items = featured.items.length > 0 ? featured.items : (await getProducts({ category: c.slug, limit: 4 })).items;
+      return [c.id, items] as [number, Product[]];
+    }),
+  );
+  const categoryProducts = Object.fromEntries(categoryProductLists);
 
   return (
     <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-foreground/10">
@@ -22,19 +28,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
       )}
 
       <div className="mx-auto max-w-7xl px-6 md:px-10 h-[75px] flex items-center justify-between gap-6">
-        <nav className="hidden md:flex items-center gap-7 text-[13px] tracking-[0.06em] uppercase flex-1">
-          <Link href="/" className="hover:text-gold transition whitespace-nowrap">
-            Accueil
-          </Link>
-          <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
-            Collection
-          </Link>
-          {categories.map((c) => (
-            <Link key={c.id} href={`/collection/${c.slug}`} className="hover:text-gold transition whitespace-nowrap">
-              {NAV_LABELS[c.slug] ?? c.name}
-            </Link>
-          ))}
-        </nav>
+        <NavMegaMenu categories={categories} categoryProducts={categoryProducts} />
 
         <Link href="/" className="flex items-center gap-3 shrink-0 px-2">
           <Logo size={56} src={homepage.logoUrl} />
