@@ -25,3 +25,62 @@ export async function getMyOrders(): Promise<AccountOrder[]> {
     throw e;
   }
 }
+
+export type AccountOrderItem = {
+  id: number;
+  variantId: number;
+  sku: string;
+  productSlug: string;
+  productName: string;
+  size: string;
+  color: string;
+  quantity: number;
+  refundedQuantity: number;
+  unitPrice: number;
+};
+
+export type AccountReturnRequest = {
+  id: number;
+  number: string;
+  status: string;
+  reason: string;
+  refundAmount: number | null;
+  orderId: number;
+  orderNumber: string;
+  items: { orderItemId: number; product: string; size: string; color: string; quantity: number }[];
+  createdAt: string;
+};
+
+export type AccountOrderDetail = {
+  id: number;
+  number: string;
+  status: string;
+  fulfillmentStatus: string;
+  total: number;
+  discountAmount: number | null;
+  shippingCost: number | null;
+  trackingNumber: string | null;
+  carrier: string | null;
+  giftWrap: boolean;
+  giftMessage: string | null;
+  shippingAddress: { street: string; city: string; postalCode: string; country: string; complement: string | null } | null;
+  createdAt: string;
+  items: AccountOrderItem[];
+  returns: AccountReturnRequest[];
+};
+
+export async function getOrderDetail(id: number): Promise<AccountOrderDetail | null> {
+  const token = getTokenFromCookies();
+  if (!token) {
+    return null;
+  }
+
+  try {
+    return await backendFetch<AccountOrderDetail>(`/api/account/orders/${id}`, { token, cache: 'no-store' });
+  } catch (e) {
+    if (e instanceof BackendError && (e.status === 401 || e.status === 404)) {
+      return null;
+    }
+    throw e;
+  }
+}

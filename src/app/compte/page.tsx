@@ -27,19 +27,26 @@ export default async function AccountPage() {
       <h1 className="section-title">MON COMPTE</h1>
       <div className="section-title-underline" />
 
-      <div className="flex items-center justify-between border border-foreground/10 p-6 mb-12">
+      <div className="flex items-center justify-between border border-foreground/10 p-6 mb-6">
         <div>
           <p className="text-sm">
             {user.firstName} {user.lastName}
           </p>
           <p className="text-sm text-foreground/50">{user.email}</p>
         </div>
-        <div className="flex items-center gap-6">
-          <Link href="/compte/adresses" className="text-xs tracking-widest2 hover:text-gold transition">
-            MES ADRESSES
-          </Link>
-          <LogoutButton />
-        </div>
+        <LogoutButton />
+      </div>
+
+      <div className="flex flex-wrap gap-3 mb-12">
+        <Link href="/compte/adresses" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
+          Mes adresses
+        </Link>
+        <Link href="/liste-de-souhaits" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
+          Liste de souhaits
+        </Link>
+        <Link href="/vu-recemment" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
+          Vu récemment
+        </Link>
       </div>
 
       <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">MES COMMANDES</h2>
@@ -48,7 +55,7 @@ export default async function AccountPage() {
       ) : (
         <div className="divide-y divide-foreground/10">
           {orders.map((order) => (
-            <div key={order.id} className="py-5">
+            <Link key={order.id} href={`/compte/commandes/${order.id}`} className="block py-5 hover:bg-surface2 transition -mx-4 px-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm">{order.number}</span>
                 <span className="text-xs text-gold">{STATUS_LABELS[order.status] ?? order.status}</span>
@@ -64,7 +71,7 @@ export default async function AccountPage() {
                 ))}
               </ul>
               <p className="text-sm mt-2">{order.total.toFixed(2)} €</p>
-            </div>
+            </Link>
           ))}
         </div>
       )}

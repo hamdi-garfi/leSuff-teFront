@@ -25,7 +25,7 @@ export async function Footer() {
   ];
 
   return (
-    <footer className="mt-24 border-t border-foreground/10">
+    <footer className="print:hidden mt-24 border-t border-foreground/10">
       <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-foreground/10 border-b border-foreground/10">
         {perks.map((p) => (
           <div key={p.title} className="flex flex-col items-center text-center gap-2 py-8 px-4">

@@ -24,7 +24,7 @@ export async function Header({ user }: { user: CurrentUser | null }) {
   const categoryProducts = Object.fromEntries(categoryProductLists);
 
   return (
-    <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-foreground/10">
+    <header className="print:hidden sticky top-0 z-50 bg-surface/95 backdrop-blur border-b border-foreground/10">
       {homepage.promoBannerEnabled && (
         <div className="bg-gold-dark/90 text-ink text-[11px] tracking-widest2 text-center py-1.5 px-4">
           {homepage.promoBannerText}
