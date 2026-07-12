@@ -10,15 +10,18 @@ const perks = [
   { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux' },
 ];
 
-const infoPageOrder = ['a-propos', 'livraison-retours', 'cgv', 'confidentialite', 'faq', 'mentions-legales'];
+const infoPageOrder = ['a-propos', 'guide-des-tailles', 'livraison-retours', 'cgv', 'confidentialite', 'faq', 'mentions-legales'];
 
 export async function Footer() {
   const [homepage, staticPages] = await Promise.all([getHomepageSettings(), getStaticPages()]);
   const publishedSlugs = new Set(staticPages.map((p) => p.slug));
   const pageLabels = new Map(staticPages.map((p) => [p.slug, p.title]));
-  const infoLinks = infoPageOrder
-    .filter((slug) => publishedSlugs.has(slug))
-    .map((slug) => ({ href: `/pages/${slug}`, label: pageLabels.get(slug) ?? slug }));
+  const infoLinks = [
+    ...infoPageOrder
+      .filter((slug) => publishedSlugs.has(slug))
+      .map((slug) => ({ href: `/pages/${slug}`, label: pageLabels.get(slug) ?? slug })),
+    { href: '/contact', label: 'Contact' },
+  ];
 
   return (
     <footer className="mt-24 border-t border-foreground/10">
