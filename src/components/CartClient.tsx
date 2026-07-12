@@ -97,12 +97,35 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
     );
   }
 
+  const freeShippingRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - cart.total);
+  const freeShippingPercent = Math.min(100, (cart.total / FREE_SHIPPING_THRESHOLD) * 100);
+
   return (
-    <div className="grid md:grid-cols-3 gap-12">
-      <div className="md:col-span-2 divide-y divide-foreground/10">
-        {cart.items.map((item) => (
-          <div key={item.id} className="flex gap-4 py-6" style={{ opacity: isPending ? 0.6 : 1 }}>
-            <div
+    <div>
+      <div className="mb-10 border border-foreground/10 p-5">
+        <p className="text-sm mb-3">
+          {freeShippingRemaining > 0 ? (
+            <>
+              Plus que <span className="text-gold font-semibold">{freeShippingRemaining.toFixed(2)} €</span> d&apos;achat
+              pour la livraison offerte
+            </>
+          ) : (
+            <span className="text-gold font-semibold">✓ Livraison offerte débloquée !</span>
+          )}
+        </p>
+        <div className="h-1.5 bg-foreground/10 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-gold-dark to-gold-light transition-all duration-500"
+            style={{ width: `${freeShippingPercent}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-12">
+        <div className="md:col-span-2 divide-y divide-foreground/10">
+          {cart.items.map((item) => (
+            <div key={item.id} className="flex gap-4 py-6" style={{ opacity: isPending ? 0.6 : 1 }}>
+              <div
               className="w-20 h-24 shrink-0 flex items-center justify-center"
               style={{ background: `linear-gradient(155deg, ${colorToHex(item.variant.color)} 0%, #0a0a0a 130%)` }}
             >
@@ -205,6 +228,7 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           {checkoutLoading ? 'Traitement…' : 'PASSER COMMANDE'}
         </button>
         {checkoutError && <p className="mt-3 text-sm text-red-400">{checkoutError}</p>}
+      </div>
       </div>
     </div>
   );
