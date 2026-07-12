@@ -2,12 +2,13 @@ import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { getHomepageSettings } from '@/lib/homepage';
 import { getStaticPages } from '@/lib/pages';
+import { TruckIcon, ReturnIcon, ShieldIcon, StarBadgeIcon, PaymentBadge } from '@/components/PaymentIcons';
 
 const perks = [
-  { title: 'Livraison offerte', desc: "Dès 80€ d'achat" },
-  { title: 'Retours faciles', desc: '30 jours pour changer d’avis' },
-  { title: 'Paiement sécurisé', desc: 'CB, PayPal, Apple Pay' },
-  { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux' },
+  { title: 'Livraison offerte', desc: "Dès 80€ d'achat", icon: <TruckIcon /> },
+  { title: 'Retours faciles', desc: '30 jours pour changer d’avis', icon: <ReturnIcon /> },
+  { title: 'Paiement sécurisé', desc: 'CB, PayPal, Apple Pay', icon: <ShieldIcon /> },
+  { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux', icon: <StarBadgeIcon /> },
 ];
 
 const infoPageOrder = ['a-propos', 'guide-des-tailles', 'livraison-retours', 'cgv', 'confidentialite', 'faq', 'mentions-legales'];
@@ -27,7 +28,8 @@ export async function Footer() {
     <footer className="mt-24 border-t border-foreground/10">
       <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-foreground/10 border-b border-foreground/10">
         {perks.map((p) => (
-          <div key={p.title} className="flex flex-col items-center text-center gap-1 py-8 px-4">
+          <div key={p.title} className="flex flex-col items-center text-center gap-2 py-8 px-4">
+            <span className="text-gold">{p.icon}</span>
             <span className="text-sm font-semibold tracking-wide">{p.title}</span>
             <span className="text-xs text-foreground/50">{p.desc}</span>
           </div>
@@ -75,11 +77,11 @@ export async function Footer() {
 
       <div className="mx-auto max-w-7xl px-6 md:px-8 pb-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-foreground/40">
         <span>© {new Date().getFullYear()} Le Suffète Classic — Tous droits réservés</span>
-        <div className="flex gap-3">
-          <span>VISA</span>
-          <span>MASTERCARD</span>
-          <span>PAYPAL</span>
-          <span>APPLE PAY</span>
+        <div className="flex gap-2">
+          <PaymentBadge method="visa" />
+          <PaymentBadge method="mastercard" />
+          <PaymentBadge method="paypal" />
+          <PaymentBadge method="apple-pay" />
         </div>
       </div>
     </footer>
