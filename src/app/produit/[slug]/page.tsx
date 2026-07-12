@@ -10,7 +10,23 @@ import { ReviewForm } from '@/components/ReviewForm';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
-  return { title: product ? `${product.name} — Le Suffète Classic` : 'Produit introuvable' };
+  if (!product) {
+    return { title: 'Produit introuvable' };
+  }
+
+  const title = product.seoTitle || `${product.name} — Le Suffète Classic`;
+  const description = product.seoDescription || product.description || undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/produit/${product.slug}` },
+    openGraph: {
+      title,
+      description,
+      images: product.imageUrl ? [{ url: product.imageUrl }] : undefined,
+    },
+  };
 }
 
 export default async function ProductPage({

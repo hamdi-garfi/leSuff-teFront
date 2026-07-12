@@ -10,6 +10,8 @@ services:
       NODE_ENV: production
       # Set to "true" only once served over real HTTPS (reverse proxy / real domain).
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      # Domaine public du site, utilisé pour les URLs canoniques, l'Open Graph et le sitemap.
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
     ports:
       - "${FRONT_PORT:-3000}:3000"
     networks:

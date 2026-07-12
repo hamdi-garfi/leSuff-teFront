@@ -17,6 +17,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
   title: 'Le Suffète Classic — Force. Style. Héritage.',
   description: "L'élégance affirmée. L'héritage qui inspire. Polos, t-shirts, sweats et casquettes Le Suffète.",
 };

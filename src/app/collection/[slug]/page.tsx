@@ -9,7 +9,23 @@ const LIMIT = 12;
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const categories = await getCategories();
   const category = categories.find((c) => c.slug === params.slug);
-  return { title: category ? `${category.name} — Le Suffète Classic` : 'Collection introuvable' };
+  if (!category) {
+    return { title: 'Collection introuvable' };
+  }
+
+  const title = category.seoTitle || `${category.name} — Le Suffète Classic`;
+  const description = category.seoDescription || category.description || undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/collection/${category.slug}` },
+    openGraph: {
+      title,
+      description,
+      images: category.imageUrl ? [{ url: category.imageUrl }] : undefined,
+    },
+  };
 }
 
 export default async function CategoryPage({

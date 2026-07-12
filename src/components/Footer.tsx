@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { getHomepageSettings } from '@/lib/homepage';
+import { getStaticPages } from '@/lib/pages';
 
 const perks = [
   { title: 'Livraison offerte', desc: "Dès 80€ d'achat" },
@@ -9,8 +10,15 @@ const perks = [
   { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux' },
 ];
 
+const infoPageOrder = ['a-propos', 'livraison-retours', 'cgv', 'confidentialite', 'faq', 'mentions-legales'];
+
 export async function Footer() {
-  const homepage = await getHomepageSettings();
+  const [homepage, staticPages] = await Promise.all([getHomepageSettings(), getStaticPages()]);
+  const publishedSlugs = new Set(staticPages.map((p) => p.slug));
+  const pageLabels = new Map(staticPages.map((p) => [p.slug, p.title]));
+  const infoLinks = infoPageOrder
+    .filter((slug) => publishedSlugs.has(slug))
+    .map((slug) => ({ href: `/pages/${slug}`, label: pageLabels.get(slug) ?? slug }));
 
   return (
     <footer className="mt-24 border-t border-foreground/10">
@@ -42,16 +50,7 @@ export async function Footer() {
           ]}
         />
 
-        <FooterColumn
-          title="Informations"
-          links={[
-            { href: '/', label: 'À propos' },
-            { href: '/', label: 'Livraison & Retours' },
-            { href: '/', label: 'Conditions Générales' },
-            { href: '/', label: 'FAQ' },
-            { href: '/', label: 'Contact' },
-          ]}
-        />
+        {infoLinks.length > 0 && <FooterColumn title="Informations" links={infoLinks} />}
 
         <div>
           <h3 className="text-xs tracking-widest2 uppercase text-foreground/70 mb-4">Newsletter</h3>

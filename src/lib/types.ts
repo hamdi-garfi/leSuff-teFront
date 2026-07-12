@@ -4,6 +4,8 @@ export type Category = {
   slug: string;
   description: string | null;
   imageUrl: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
 };
 
 export type ProductVariant = {
@@ -33,6 +35,8 @@ export type Product = {
   widthCm: number | null;
   heightCm: number | null;
   shippingNote: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
   category: { id: number; name: string; slug: string };
   variants: ProductVariant[];
 };
