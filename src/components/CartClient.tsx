@@ -3,13 +3,21 @@
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import type { Cart, ShippingZone } from '@/lib/types';
+import type { Address, Cart, ShippingZone } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
 import { useCart } from '@/lib/CartContext';
 import { CartVariantPicker } from '@/components/CartVariantPicker';
 
-export function CartClient({ initialCart, shippingZones }: { initialCart: Cart | null; shippingZones: ShippingZone[] }) {
+export function CartClient({
+  initialCart,
+  shippingZones,
+  addresses,
+}: {
+  initialCart: Cart | null;
+  shippingZones: ShippingZone[];
+  addresses: Address[];
+}) {
   const router = useRouter();
   const { refresh: refreshCartContext } = useCart();
   const [cart, setCart] = useState(initialCart);
@@ -21,6 +29,10 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
   const [showGiftCard, setShowGiftCard] = useState(false);
   const [country, setCountry] = useState('France');
   const [showCountryPicker, setShowCountryPicker] = useState(false);
+  const [addressId, setAddressId] = useState<number | null>(addresses[0]?.id ?? null);
+  const [giftWrap, setGiftWrap] = useState(false);
+  const [giftMessage, setGiftMessage] = useState('');
+  const [hidePriceOnSlip, setHidePriceOnSlip] = useState(false);
 
   const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
   const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
@@ -76,6 +88,8 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
         country,
         ...(couponCode ? { couponCode } : {}),
         ...(giftCardCode ? { giftCardCode } : {}),
+        ...(addressId ? { addressId } : {}),
+        ...(giftWrap ? { giftWrap: true, giftMessage, hidePriceOnSlip } : {}),
       }),
     });
     const data = await res.json();
@@ -233,6 +247,30 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           </div>
         )}
 
+        {addresses.length > 0 ? (
+          <div className="mb-4">
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE DE LIVRAISON</label>
+            <select
+              value={addressId ?? ''}
+              onChange={(e) => setAddressId(e.target.value ? Number(e.target.value) : null)}
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+            >
+              {addresses.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.street}, {a.postalCode} {a.city}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <p className="text-xs text-foreground/50 mb-4">
+            Aucune adresse enregistrée.{' '}
+            <Link href="/compte/adresses" className="text-gold hover:underline">
+              En ajouter une
+            </Link>
+          </p>
+        )}
+
         <div className="flex justify-between text-sm mb-4 text-foreground/50">
           <span>Livraison{selectedZone && cart.total < FREE_SHIPPING_THRESHOLD ? ` (${selectedZone.estimatedDaysMin}–${selectedZone.estimatedDaysMax}j)` : ''}</span>
           <span>
@@ -279,6 +317,27 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           >
             + J&apos;ai une carte cadeau
           </button>
+        )}
+
+        <label className="flex items-center gap-2 text-sm mb-4 cursor-pointer">
+          <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="accent-gold" />
+          🎁 Emballage cadeau
+        </label>
+
+        {giftWrap && (
+          <div className="mb-4 border-l-2 border-gold/30 pl-3">
+            <textarea
+              value={giftMessage}
+              onChange={(e) => setGiftMessage(e.target.value)}
+              placeholder="Message personnalisé (optionnel)"
+              rows={3}
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-2"
+            />
+            <label className="flex items-center gap-2 text-xs text-foreground/60 cursor-pointer">
+              <input type="checkbox" checked={hidePriceOnSlip} onChange={(e) => setHidePriceOnSlip(e.target.checked)} className="accent-gold" />
+              Masquer le prix sur le bordereau (idéal si c&apos;est un cadeau)
+            </label>
+          </div>
         )}
 
         <button type="button" onClick={handleCheckout} disabled={checkoutLoading} className="btn-gold w-full disabled:opacity-50">

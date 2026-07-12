@@ -23,7 +23,15 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = await request.json().catch(() => ({}));
-  const body: { couponCode?: string; giftCardCode?: string; country?: string } = {};
+  const body: {
+    couponCode?: string;
+    giftCardCode?: string;
+    country?: string;
+    addressId?: number;
+    giftWrap?: boolean;
+    giftMessage?: string;
+    hidePriceOnSlip?: boolean;
+  } = {};
   if (typeof payload.couponCode === 'string' && payload.couponCode.trim() !== '') {
     body.couponCode = payload.couponCode.trim();
   }
@@ -32,6 +40,18 @@ export async function POST(request: NextRequest) {
   }
   if (typeof payload.country === 'string' && payload.country.trim() !== '') {
     body.country = payload.country.trim();
+  }
+  if (typeof payload.addressId === 'number') {
+    body.addressId = payload.addressId;
+  }
+  if (typeof payload.giftWrap === 'boolean') {
+    body.giftWrap = payload.giftWrap;
+  }
+  if (typeof payload.giftMessage === 'string' && payload.giftMessage.trim() !== '') {
+    body.giftMessage = payload.giftMessage.trim();
+  }
+  if (typeof payload.hidePriceOnSlip === 'boolean') {
+    body.hidePriceOnSlip = payload.hidePriceOnSlip;
   }
 
   try {
