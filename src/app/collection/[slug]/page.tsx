@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation';
-import { getCategories, getProducts } from '@/lib/catalog';
+import { getCategories, getFacets, getProducts } from '@/lib/catalog';
 import { ProductCard } from '@/components/ProductCard';
 import { SearchBox } from '@/components/SearchBox';
 import { Pagination } from '@/components/Pagination';
+import { FilterBar } from '@/components/FilterBar';
+import type { CollectionSearchParams } from '@/lib/collectionQuery';
+import { parseCollectionSearchParams, searchParamsToExtra } from '@/lib/collectionQuery';
 
 const LIMIT = 12;
 
@@ -33,7 +36,7 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { q?: string; page?: string };
+  searchParams: CollectionSearchParams;
 }) {
   const categories = await getCategories();
   const category = categories.find((c) => c.slug === params.slug);
@@ -42,15 +45,11 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const page = Math.max(1, Number(searchParams.page ?? 1) || 1);
-  const search = searchParams.q ?? '';
-
-  const { items, total } = await getProducts({
-    category: params.slug,
-    search: search || undefined,
-    page,
-    limit: LIMIT,
-  });
+  const query = parseCollectionSearchParams(searchParams, LIMIT);
+  const [{ items, total }, facets] = await Promise.all([
+    getProducts({ ...query, category: params.slug }),
+    getFacets(params.slug),
+  ]);
   const totalPages = Math.max(1, Math.ceil(total / LIMIT));
 
   return (
@@ -61,7 +60,8 @@ export default async function CategoryPage({
         <p className="text-center text-foreground/50 max-w-lg mx-auto -mt-6 mb-10">{category.description}</p>
       )}
 
-      <SearchBox basePath={`/collection/${params.slug}`} defaultValue={search} />
+      <SearchBox basePath={`/collection/${params.slug}`} defaultValue={query.search} />
+      <FilterBar basePath={`/collection/${params.slug}`} facets={facets} />
 
       {items.length === 0 ? (
         <p className="text-center text-foreground/50 mt-12">Aucun produit dans cette collection pour le moment.</p>
@@ -74,9 +74,9 @@ export default async function CategoryPage({
           </div>
           <Pagination
             basePath={`/collection/${params.slug}`}
-            page={page}
+            page={query.page ?? 1}
             totalPages={totalPages}
-            extraParams={search ? { q: search } : {}}
+            extraParams={searchParamsToExtra(searchParams)}
           />
         </>
       )}
