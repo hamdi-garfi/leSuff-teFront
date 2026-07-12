@@ -2,16 +2,45 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Product } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { QuickViewModal } from '@/components/QuickViewModal';
 import { WishlistButton } from '@/components/WishlistButton';
 
 export function ProductCard({ product }: { product: Product }) {
+  const router = useRouter();
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
   const defaultColor = colors[0] ?? '';
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(defaultColor);
+  const [addingId, setAddingId] = useState<number | null>(null);
+  const [addedId, setAddedId] = useState<number | null>(null);
+
+  const sizesForPreview = useMemo(
+    () => product.variants.filter((v) => v.color === previewColor),
+    [product.variants, previewColor],
+  );
+
+  async function quickAdd(variantId: number) {
+    setAddingId(variantId);
+    const res = await fetch('/api/cart/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variantId, quantity: 1 }),
+    });
+    setAddingId(null);
+
+    if (res.status === 401) {
+      router.push('/compte/connexion?next=collection');
+      return;
+    }
+    if (!res.ok) return;
+
+    setAddedId(variantId);
+    router.refresh();
+    setTimeout(() => setAddedId(null), 1500);
+  }
 
   const previewImage = useMemo(() => {
     if (colors.length <= 1) return null;
@@ -81,13 +110,35 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </Link>
         {totalStock > 0 && (
-          <button
-            type="button"
-            onClick={() => setQuickViewOpen(true)}
-            className="absolute bottom-0 left-0 right-0 text-center text-[11px] tracking-widest2 uppercase text-white py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition"
-          >
-            Vue rapide
-          </button>
+          <div className="absolute bottom-0 left-0 right-0 flex flex-wrap items-center justify-center gap-1.5 py-3 px-2 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition">
+            {sizesForPreview.map((variant) => (
+              <button
+                key={variant.id}
+                type="button"
+                disabled={variant.stock === 0 || addingId === variant.id}
+                onClick={() => quickAdd(variant.id)}
+                title={variant.stock === 0 ? 'Rupture' : `Ajouter — taille ${variant.size}`}
+                className={`min-w-[26px] h-7 px-1.5 text-[11px] border transition ${
+                  variant.stock === 0
+                    ? 'border-white/20 text-white/30 line-through cursor-not-allowed'
+                    : addedId === variant.id
+                      ? 'border-gold bg-gold text-ink'
+                      : 'border-white/50 text-white hover:border-gold hover:text-gold'
+                }`}
+              >
+                {addedId === variant.id ? '✓' : variant.size}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setQuickViewOpen(true)}
+              aria-label="Vue rapide"
+              title="Vue rapide"
+              className="w-7 h-7 flex items-center justify-center border border-white/50 text-white hover:border-gold hover:text-gold transition ml-1"
+            >
+              <EyeIcon />
+            </button>
+          </div>
         )}
       </div>
       {quickViewOpen && <QuickViewModal product={product} onClose={() => setQuickViewOpen(false)} />}
@@ -124,5 +175,14 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
     </div>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
   );
 }
