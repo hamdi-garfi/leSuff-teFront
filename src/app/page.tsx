@@ -51,7 +51,6 @@ export default async function HomePage() {
           </div>
           <div className="relative aspect-square mx-auto w-full max-w-[357px] flex items-center justify-center">
             <div className="absolute inset-0 rounded-full bg-gold/10 blur-3xl" />
-            <div className="absolute inset-0 rounded-full border border-gold/15" />
             {homepage.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

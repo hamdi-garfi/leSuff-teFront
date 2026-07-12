@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { QuickViewModal } from '@/components/QuickViewModal';
+import { WishlistButton } from '@/components/WishlistButton';
 
 export function ProductCard({ product }: { product: Product }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
@@ -73,6 +74,10 @@ export function ProductCard({ product }: { product: Product }) {
                 RUPTURE
               </span>
             )}
+            <WishlistButton
+              productId={product.id}
+              className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white hover:text-gold transition drop-shadow-md"
+            />
           </div>
         </Link>
         {totalStock > 0 && (

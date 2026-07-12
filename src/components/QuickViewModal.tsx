@@ -6,6 +6,7 @@ import type { Product } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
 import { ColorSwatches } from '@/components/ColorSwatches';
 import { AddToCartForm } from '@/components/AddToCartForm';
+import { WishlistButton } from '@/components/WishlistButton';
 
 export function QuickViewModal({ product, onClose }: { product: Product; onClose: () => void }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
@@ -64,7 +65,13 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
         </div>
 
         <div>
-          <p className="text-xs tracking-widest2 text-gold mb-2">{product.category.name.toUpperCase()}</p>
+          <div className="flex items-start justify-between gap-4">
+            <p className="text-xs tracking-widest2 text-gold mb-2">{product.category.name.toUpperCase()}</p>
+            <WishlistButton
+              productId={product.id}
+              className="w-8 h-8 flex items-center justify-center text-foreground/50 hover:text-gold transition shrink-0"
+            />
+          </div>
           <h2 className="font-serif text-2xl mb-3">{product.name}</h2>
           <p className="text-xl mb-4">
             <span className={onSale ? 'text-gold font-semibold' : 'text-foreground/90'}>{product.basePrice.toFixed(2)} €</span>

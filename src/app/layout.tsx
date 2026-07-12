@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getCart, getCurrentUser } from '@/lib/session';
+import { WishlistProvider } from '@/lib/WishlistContext';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -36,9 +37,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="font-sans">
-        <Header cartCount={cartCount} user={user} />
-        <main>{children}</main>
-        <Footer />
+        <WishlistProvider isAuthenticated={!!user}>
+          <Header cartCount={cartCount} user={user} />
+          <main>{children}</main>
+          <Footer />
+        </WishlistProvider>
       </body>
     </html>
   );

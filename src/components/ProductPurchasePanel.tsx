@@ -7,6 +7,7 @@ import { ProductGallery } from '@/components/ProductGallery';
 import { ColorSwatches } from '@/components/ColorSwatches';
 import { AddToCartForm } from '@/components/AddToCartForm';
 import { StarRating } from '@/components/StarRating';
+import { WishlistButton } from '@/components/WishlistButton';
 
 export function ProductPurchasePanel({
   product,
@@ -60,7 +61,13 @@ export function ProductPurchasePanel({
       </div>
 
       <div>
-        <p className="text-xs tracking-widest2 text-gold mb-2">{product.category.name.toUpperCase()}</p>
+        <div className="flex items-start justify-between gap-4">
+          <p className="text-xs tracking-widest2 text-gold mb-2">{product.category.name.toUpperCase()}</p>
+          <WishlistButton
+            productId={product.id}
+            className="w-9 h-9 flex items-center justify-center text-foreground/50 hover:text-gold transition shrink-0"
+          />
+        </div>
         <h1 className="font-serif text-3xl md:text-4xl mb-3">{product.name}</h1>
         {reviews.average !== null && (
           <div className="flex items-center gap-2 mb-3">

@@ -93,3 +93,18 @@ export type HomepageSettings = {
   promoBannerText: string;
   promoBannerEnabled: boolean;
 };
+
+export type WishlistItem = {
+  id: number;
+  productId: number;
+  product: {
+    id: number;
+    name: string;
+    slug: string;
+    basePrice: number;
+    compareAtPrice: number | null;
+    imageUrl: string | null;
+    inStock: boolean;
+  };
+  createdAt: string;
+};

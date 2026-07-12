@@ -6,6 +6,7 @@ import type { CurrentUser, Product } from '@/lib/types';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { NavMegaMenu } from '@/components/NavMegaMenu';
 import { NAV_LABELS } from '@/lib/navLabels';
+import { WishlistHeaderLink } from '@/components/WishlistHeaderLink';
 
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
   const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
@@ -40,6 +41,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
           <Link href="/collection" className="hover:text-gold transition" aria-label="Rechercher">
             <SearchIcon />
           </Link>
+          <WishlistHeaderLink />
           <Link
             href={user ? '/compte' : '/compte/connexion'}
             className="hover:text-gold transition text-[13px] tracking-[0.06em] uppercase hidden sm:inline"
