@@ -10,7 +10,12 @@ import { WishlistButton } from '@/components/WishlistButton';
 
 export function QuickViewModal({ product, onClose }: { product: Product; onClose: () => void }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
-  const [selectedColor, setSelectedColor] = useState(colors[0] ?? '');
+  // Prefer opening on a color that actually has a photo, so the preview isn't blank by default.
+  const colorWithPhoto = useMemo(
+    () => colors.find((c) => product.variants.some((v) => v.color === c && v.imageUrl)),
+    [colors, product.variants],
+  );
+  const [selectedColor, setSelectedColor] = useState(colorWithPhoto ?? colors[0] ?? '');
 
   const image = useMemo(() => {
     const variantWithImage = product.variants.find((v) => v.color === selectedColor && v.imageUrl);

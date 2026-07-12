@@ -13,7 +13,12 @@ export function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
   const { refresh: refreshCart, openDrawer } = useCart();
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
-  const defaultColor = colors[0] ?? '';
+  // Prefer previewing a color that actually has a photo, so the default thumbnail isn't a mismatch.
+  const colorWithPhoto = useMemo(
+    () => colors.find((c) => product.variants.some((v) => v.color === c && v.imageUrl)),
+    [colors, product.variants],
+  );
+  const defaultColor = colorWithPhoto ?? colors[0] ?? '';
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(defaultColor);
   const [addingId, setAddingId] = useState<number | null>(null);

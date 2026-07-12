@@ -22,8 +22,13 @@ export function ProductPurchasePanel({
   initialColor?: string;
 }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
+  // Prefer opening on a color that actually has a photo, so the gallery isn't blank by default.
+  const colorWithPhoto = useMemo(
+    () => colors.find((c) => product.variants.some((v) => v.color === c && v.imageUrl)),
+    [colors, product.variants],
+  );
   const [selectedColor, setSelectedColor] = useState(
-    initialColor && colors.includes(initialColor) ? initialColor : colors[0] ?? '',
+    initialColor && colors.includes(initialColor) ? initialColor : colorWithPhoto ?? colors[0] ?? '',
   );
 
   const colorImage = useMemo(() => {
