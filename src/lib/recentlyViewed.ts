@@ -19,6 +19,11 @@ export function recordView(slug: string): string[] {
   return updated;
 }
 
+export function clearHistory(): void {
+  localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(new Event(UPDATE_EVENT));
+}
+
 export function subscribeToRecentlyViewed(callback: () => void): () => void {
   window.addEventListener(UPDATE_EVENT, callback);
   window.addEventListener('storage', callback);

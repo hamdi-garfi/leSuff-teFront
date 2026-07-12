@@ -18,7 +18,9 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [giftCardCode, setGiftCardCode] = useState('');
-  const [country, setCountry] = useState('');
+  const [showGiftCard, setShowGiftCard] = useState(false);
+  const [country, setCountry] = useState('France');
+  const [showCountryPicker, setShowCountryPicker] = useState(false);
 
   const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
   const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
@@ -192,19 +194,44 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           <span>{cart.total.toFixed(2)} €</span>
         </div>
 
-        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">PAYS DE LIVRAISON</label>
-        <select
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
-        >
-          <option value="">Choisir un pays…</option>
-          {shippingZones.map((zone) => (
-            <option key={zone.id} value={zone.country}>
-              {zone.country}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-1">PAYS DE LIVRAISON</label>
+            {!showCountryPicker && <p className="text-sm">{country || 'Choisir un pays…'}</p>}
+          </div>
+          {!showCountryPicker && (
+            <button
+              type="button"
+              onClick={() => setShowCountryPicker(true)}
+              className="text-xs text-foreground/50 hover:text-gold transition shrink-0"
+            >
+              Changer
+            </button>
+          )}
+        </div>
+        {showCountryPicker && (
+          <div className="flex items-center gap-2 mb-4">
+            <select
+              value={country}
+              onChange={(e) => {
+                setCountry(e.target.value);
+                setShowCountryPicker(false);
+              }}
+              autoFocus
+              className="flex-1 bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+            >
+              <option value="">Choisir un pays…</option>
+              {shippingZones.map((zone) => (
+                <option key={zone.id} value={zone.country}>
+                  {zone.country}
+                </option>
+              ))}
+            </select>
+            <button type="button" onClick={() => setShowCountryPicker(false)} className="text-xs text-foreground/50 hover:text-gold transition shrink-0">
+              Annuler
+            </button>
+          </div>
+        )}
 
         <div className="flex justify-between text-sm mb-4 text-foreground/50">
           <span>Livraison{selectedZone && cart.total < FREE_SHIPPING_THRESHOLD ? ` (${selectedZone.estimatedDaysMin}–${selectedZone.estimatedDaysMax}j)` : ''}</span>
@@ -232,14 +259,27 @@ export function CartClient({ initialCart, shippingZones }: { initialCart: Cart |
           className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
         />
 
-        <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CARTE CADEAU</label>
-        <input
-          type="text"
-          value={giftCardCode}
-          onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
-          placeholder="XXXX-XXXX-XXXX"
-          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
-        />
+        {showGiftCard ? (
+          <>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CARTE CADEAU</label>
+            <input
+              type="text"
+              value={giftCardCode}
+              onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+              placeholder="XXXX-XXXX-XXXX"
+              autoFocus
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+            />
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowGiftCard(true)}
+            className="text-xs text-foreground/50 hover:text-gold transition mb-4 block"
+          >
+            + J&apos;ai une carte cadeau
+          </button>
+        )}
 
         <button type="button" onClick={handleCheckout} disabled={checkoutLoading} className="btn-gold w-full disabled:opacity-50">
           {checkoutLoading ? 'Traitement…' : 'PASSER COMMANDE'}
