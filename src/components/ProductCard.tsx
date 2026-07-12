@@ -4,10 +4,12 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
+import { QuickViewModal } from '@/components/QuickViewModal';
 
 export function ProductCard({ product }: { product: Product }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
   const defaultColor = colors[0] ?? '';
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(defaultColor);
 
   const previewImage = useMemo(() => {
@@ -27,51 +29,63 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group block">
-      <Link href={hrefFor(previewColor)} className="block">
-        <div
-          className="aspect-[3/4] w-full flex items-center justify-center relative overflow-hidden"
-          style={mainImage ? undefined : { background: `linear-gradient(155deg, ${colorToHex(previewColor)} 0%, #0a0a0a 120%)` }}
-        >
-          {mainImage ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={mainImage}
-                alt={product.name}
-                className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${!previewImage && hoverImage ? 'group-hover:opacity-0' : ''}`}
-              />
-              {!previewImage && hoverImage && (
-                // eslint-disable-next-line @next/next/no-img-element
+      <div className="relative">
+        <Link href={hrefFor(previewColor)} className="block">
+          <div
+            className="aspect-[3/4] w-full flex items-center justify-center relative overflow-hidden"
+            style={mainImage ? undefined : { background: `linear-gradient(155deg, ${colorToHex(previewColor)} 0%, #0a0a0a 120%)` }}
+          >
+            {mainImage ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={hoverImage}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 group-hover:opacity-100 transition-opacity duration-300"
+                  src={mainImage}
+                  alt={product.name}
+                  className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${!previewImage && hoverImage ? 'group-hover:opacity-0' : ''}`}
                 />
-              )}
-            </>
-          ) : (
-            <span className="font-serif text-5xl text-foreground/15 group-hover:text-gold/25 transition-colors select-none">
-              {product.name.charAt(0)}
-            </span>
-          )}
-          {onSale && (
-            <span className="absolute top-3 left-3 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
-              -{discountPct}%
-            </span>
-          )}
-          {!onSale && totalStock <= 5 && totalStock > 0 && (
-            <span className="absolute top-3 left-3 bg-white text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
-              PRESQUE ÉPUISÉ
-            </span>
-          )}
-          {totalStock === 0 && (
-            <span className="absolute top-3 left-3 bg-black/80 text-white text-[10px] font-bold px-2 py-1 tracking-wide">
-              RUPTURE
-            </span>
-          )}
-        </div>
-      </Link>
+                {!previewImage && hoverImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={hoverImage}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 group-hover:opacity-100 transition-opacity duration-300"
+                  />
+                )}
+              </>
+            ) : (
+              <span className="font-serif text-5xl text-foreground/15 group-hover:text-gold/25 transition-colors select-none">
+                {product.name.charAt(0)}
+              </span>
+            )}
+            {onSale && (
+              <span className="absolute top-3 left-3 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
+                -{discountPct}%
+              </span>
+            )}
+            {!onSale && totalStock <= 5 && totalStock > 0 && (
+              <span className="absolute top-3 left-3 bg-white text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
+                PRESQUE ÉPUISÉ
+              </span>
+            )}
+            {totalStock === 0 && (
+              <span className="absolute top-3 left-3 bg-black/80 text-white text-[10px] font-bold px-2 py-1 tracking-wide">
+                RUPTURE
+              </span>
+            )}
+          </div>
+        </Link>
+        {totalStock > 0 && (
+          <button
+            type="button"
+            onClick={() => setQuickViewOpen(true)}
+            className="absolute bottom-0 left-0 right-0 text-center text-[11px] tracking-widest2 uppercase text-white py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition"
+          >
+            Vue rapide
+          </button>
+        )}
+      </div>
+      {quickViewOpen && <QuickViewModal product={product} onClose={() => setQuickViewOpen(false)} />}
       <div className="pt-3">
         <Link href={hrefFor(previewColor)} className="text-sm text-foreground/90 hover:text-gold transition">
           {product.name}
