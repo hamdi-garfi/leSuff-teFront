@@ -25,7 +25,21 @@ export default async function HomePage() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-foreground/10">
-        <MountainBackdrop />
+        {homepage.heroVideoUrl ? (
+          <>
+            <video
+              src={homepage.heroVideoUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover opacity-30"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface/40 via-surface/70 to-surface" />
+          </>
+        ) : (
+          <MountainBackdrop />
+        )}
         <div className="relative mx-auto max-w-7xl px-6 md:px-8 py-12 md:py-16 grid md:grid-cols-2 gap-12 items-center">
           <div className="max-w-[450px]">
             <p className="text-gold text-[13px] tracking-[0.08em] mb-4">{homepage.heroKicker}</p>

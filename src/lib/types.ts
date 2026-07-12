@@ -84,6 +84,7 @@ export type ShippingZone = {
 
 export type HomepageSettings = {
   logoUrl: string | null;
+  heroVideoUrl: string | null;
   heroKicker: string;
   heroTitle: string;
   heroSubtitle: string;
