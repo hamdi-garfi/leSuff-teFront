@@ -26,6 +26,17 @@ function pushRecent(term: string) {
   localStorage.setItem(RECENT_KEY, JSON.stringify(next));
 }
 
+function removeRecent(term: string) {
+  const next = readRecent().filter((t) => t.toLowerCase() !== term.toLowerCase());
+  localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  return next;
+}
+
+function clearRecent() {
+  localStorage.removeItem(RECENT_KEY);
+  return [];
+}
+
 export function SearchOverlay() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -112,17 +123,34 @@ export function SearchOverlay() {
             <div className="p-4">
               {query.trim().length < 2 && recent.length > 0 && (
                 <div className="mb-4">
-                  <p className="text-xs tracking-widest2 text-foreground/40 mb-2">RECHERCHES RÉCENTES</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs tracking-widest2 text-foreground/40">RECHERCHES RÉCENTES</p>
+                    <button
+                      type="button"
+                      onClick={() => setRecent(clearRecent())}
+                      className="text-xs text-foreground/50 hover:text-gold transition"
+                    >
+                      Tout effacer
+                    </button>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {recent.map((term) => (
-                      <button
+                      <span
                         key={term}
-                        type="button"
-                        onClick={() => goToCollection(term)}
-                        className="bg-surface2 border border-foreground/15 px-3 py-1.5 text-xs hover:border-gold transition"
+                        className="flex items-center gap-1.5 bg-surface2 border border-foreground/15 pl-3 pr-1.5 py-1.5 text-xs"
                       >
-                        {term}
-                      </button>
+                        <button type="button" onClick={() => goToCollection(term)} className="hover:text-gold transition">
+                          {term}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRecent(removeRecent(term))}
+                          aria-label={`Supprimer « ${term} »`}
+                          className="w-4 h-4 flex items-center justify-center text-foreground/40 hover:text-red-400 transition"
+                        >
+                          ×
+                        </button>
+                      </span>
                     ))}
                   </div>
                 </div>

@@ -12,13 +12,14 @@ export class BackendError extends Error {
 type BackendFetchOptions = {
   method?: string;
   token?: string | null;
+  headers?: Record<string, string>;
   body?: unknown;
   cache?: RequestCache;
   next?: NextFetchRequestConfig;
 };
 
 export async function backendFetch<T>(path: string, options: BackendFetchOptions = {}): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', ...options.headers };
   if (options.token) {
     headers.Authorization = `Bearer ${options.token}`;
   }

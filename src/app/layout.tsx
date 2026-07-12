@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-sans">
         <WishlistProvider isAuthenticated={!!user}>
-          <CartProvider isAuthenticated={!!user} initialCart={cart}>
+          <CartProvider initialCart={cart}>
             <Header user={user} />
             <main>{children}</main>
             <Footer />

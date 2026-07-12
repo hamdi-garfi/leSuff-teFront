@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { backendFetch, BackendError } from '@/lib/backend';
-import { getTokenFromCookies } from '@/lib/auth';
+import { AUTH_COOKIE, authCookieOptions, getTokenFromCookies } from '@/lib/auth';
+import { clearGuestCartToken, guestCartHeaders } from '@/lib/guestCart';
 
 type CheckoutResponse = {
   id: number;
@@ -14,13 +15,11 @@ type CheckoutResponse = {
   giftCardAmountUsed: number | null;
   total: number;
   clientSecret?: string;
+  account?: { created: boolean; email: string; token: string } | null;
 };
 
 export async function POST(request: NextRequest) {
   const token = getTokenFromCookies();
-  if (!token) {
-    return NextResponse.json({ error: 'authentication required' }, { status: 401 });
-  }
 
   const payload = await request.json().catch(() => ({}));
   const body: {
@@ -31,6 +30,13 @@ export async function POST(request: NextRequest) {
     giftWrap?: boolean;
     giftMessage?: string;
     hidePriceOnSlip?: boolean;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    complement?: string;
   } = {};
   if (typeof payload.couponCode === 'string' && payload.couponCode.trim() !== '') {
     body.couponCode = payload.couponCode.trim();
@@ -53,10 +59,27 @@ export async function POST(request: NextRequest) {
   if (typeof payload.hidePriceOnSlip === 'boolean') {
     body.hidePriceOnSlip = payload.hidePriceOnSlip;
   }
+  if (!token) {
+    for (const field of ['email', 'firstName', 'lastName', 'street', 'city', 'postalCode', 'complement'] as const) {
+      if (typeof payload[field] === 'string' && payload[field].trim() !== '') {
+        body[field] = payload[field].trim();
+      }
+    }
+  }
 
   try {
-    const order = await backendFetch<CheckoutResponse>('/api/checkout', { method: 'POST', token, body });
-    return NextResponse.json(order, { status: 201 });
+    const order = await backendFetch<CheckoutResponse>('/api/checkout', {
+      method: 'POST',
+      token,
+      headers: guestCartHeaders(token),
+      body,
+    });
+    const response = NextResponse.json(order, { status: 201 });
+    if (order.account?.token) {
+      response.cookies.set(AUTH_COOKIE, order.account.token, authCookieOptions(60 * 60 * 24 * 7));
+      clearGuestCartToken(response);
+    }
+    return response;
   } catch (e) {
     if (e instanceof BackendError) {
       return NextResponse.json(e.body, { status: e.status });

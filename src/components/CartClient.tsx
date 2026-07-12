@@ -13,10 +13,12 @@ export function CartClient({
   initialCart,
   shippingZones,
   addresses,
+  isAuthenticated,
 }: {
   initialCart: Cart | null;
   shippingZones: ShippingZone[];
   addresses: Address[];
+  isAuthenticated: boolean;
 }) {
   const router = useRouter();
   const { refresh: refreshCartContext } = useCart();
@@ -33,6 +35,13 @@ export function CartClient({
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState('');
   const [hidePriceOnSlip, setHidePriceOnSlip] = useState(false);
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestFirstName, setGuestFirstName] = useState('');
+  const [guestLastName, setGuestLastName] = useState('');
+  const [guestStreet, setGuestStreet] = useState('');
+  const [guestCity, setGuestCity] = useState('');
+  const [guestPostalCode, setGuestPostalCode] = useState('');
+  const [guestComplement, setGuestComplement] = useState('');
 
   const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
   const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
@@ -78,6 +87,13 @@ export function CartClient({
       return;
     }
 
+    if (!isAuthenticated) {
+      if (!guestEmail || !guestFirstName || !guestLastName || !guestStreet || !guestCity || !guestPostalCode) {
+        setCheckoutError('Merci de renseigner ton email, ton nom et ton adresse de livraison.');
+        return;
+      }
+    }
+
     setCheckoutLoading(true);
     setCheckoutError(null);
 
@@ -88,16 +104,21 @@ export function CartClient({
         country,
         ...(couponCode ? { couponCode } : {}),
         ...(giftCardCode ? { giftCardCode } : {}),
-        ...(addressId ? { addressId } : {}),
         ...(giftWrap ? { giftWrap: true, giftMessage, hidePriceOnSlip } : {}),
+        ...(isAuthenticated
+          ? { ...(addressId ? { addressId } : {}) }
+          : {
+              email: guestEmail,
+              firstName: guestFirstName,
+              lastName: guestLastName,
+              street: guestStreet,
+              city: guestCity,
+              postalCode: guestPostalCode,
+              ...(guestComplement ? { complement: guestComplement } : {}),
+            }),
       }),
     });
     const data = await res.json();
-
-    if (res.status === 401) {
-      router.push('/compte/connexion?next=panier');
-      return;
-    }
 
     if (!res.ok) {
       setCheckoutError(data.error ?? 'Le paiement est momentanément indisponible.');
@@ -247,28 +268,93 @@ export function CartClient({
           </div>
         )}
 
-        {addresses.length > 0 ? (
-          <div className="mb-4">
-            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE DE LIVRAISON</label>
-            <select
-              value={addressId ?? ''}
-              onChange={(e) => setAddressId(e.target.value ? Number(e.target.value) : null)}
-              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
-            >
-              {addresses.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.street}, {a.postalCode} {a.city}
-                </option>
-              ))}
-            </select>
-          </div>
+        {isAuthenticated ? (
+          addresses.length > 0 ? (
+            <div className="mb-4">
+              <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE DE LIVRAISON</label>
+              <select
+                value={addressId ?? ''}
+                onChange={(e) => setAddressId(e.target.value ? Number(e.target.value) : null)}
+                className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              >
+                {addresses.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.street}, {a.postalCode} {a.city}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="text-xs text-foreground/50 mb-4">
+              Aucune adresse enregistrée.{' '}
+              <Link href="/compte/adresses" className="text-gold hover:underline">
+                En ajouter une
+              </Link>
+            </p>
+          )
         ) : (
-          <p className="text-xs text-foreground/50 mb-4">
-            Aucune adresse enregistrée.{' '}
-            <Link href="/compte/adresses" className="text-gold hover:underline">
-              En ajouter une
-            </Link>
-          </p>
+          <div className="mb-4 space-y-2">
+            <label className="text-xs tracking-widest2 text-foreground/60 block">VOS COORDONNÉES</label>
+            <input
+              type="email"
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                value={guestFirstName}
+                onChange={(e) => setGuestFirstName(e.target.value)}
+                placeholder="Prénom"
+                className="bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              />
+              <input
+                type="text"
+                value={guestLastName}
+                onChange={(e) => setGuestLastName(e.target.value)}
+                placeholder="Nom"
+                className="bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              />
+            </div>
+            <input
+              type="text"
+              value={guestStreet}
+              onChange={(e) => setGuestStreet(e.target.value)}
+              placeholder="Adresse"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                value={guestPostalCode}
+                onChange={(e) => setGuestPostalCode(e.target.value)}
+                placeholder="Code postal"
+                className="bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              />
+              <input
+                type="text"
+                value={guestCity}
+                onChange={(e) => setGuestCity(e.target.value)}
+                placeholder="Ville"
+                className="bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              />
+            </div>
+            <input
+              type="text"
+              value={guestComplement}
+              onChange={(e) => setGuestComplement(e.target.value)}
+              placeholder="Complément d'adresse (optionnel)"
+              className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+            />
+            <p className="text-xs text-foreground/40">
+              Un compte sera créé avec cet email pour suivre ta commande.{' '}
+              <Link href="/compte/connexion?next=panier" className="text-gold hover:underline">
+                Déjà client ? Se connecter
+              </Link>
+            </p>
+          </div>
         )}
 
         <div className="flex justify-between text-sm mb-4 text-foreground/50">

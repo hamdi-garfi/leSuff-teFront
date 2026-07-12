@@ -13,26 +13,14 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({
-  children,
-  isAuthenticated,
-  initialCart = null,
-}: {
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-  initialCart?: Cart | null;
-}) {
+export function CartProvider({ children, initialCart = null }: { children: React.ReactNode; initialCart?: Cart | null }) {
   const [cart, setCart] = useState<Cart | null>(initialCart);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const refresh = useCallback(async () => {
-    if (!isAuthenticated) {
-      setCart(null);
-      return;
-    }
     const res = await fetch('/api/cart');
     setCart(res.ok ? await res.json() : null);
-  }, [isAuthenticated]);
+  }, []);
 
   return (
     <CartContext.Provider
