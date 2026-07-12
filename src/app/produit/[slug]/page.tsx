@@ -7,6 +7,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { ProductPurchasePanel } from '@/components/ProductPurchasePanel';
 import { StarRating } from '@/components/StarRating';
 import { ReviewForm } from '@/components/ReviewForm';
+import { RecentlyViewed } from '@/components/RecentlyViewed';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
@@ -115,6 +116,8 @@ export default async function ProductPage({
           </div>
         </section>
       )}
+
+      <RecentlyViewed currentSlug={product.slug} />
     </div>
   );
 }
