@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { getHomepageSettings } from '@/lib/homepage';
 import { getStaticPages } from '@/lib/pages';
-import { TruckIcon, ReturnIcon, ShieldIcon, StarBadgeIcon, PaymentBadge } from '@/components/PaymentIcons';
+import { TruckIcon, ReturnIcon, ShieldIcon, StarBadgeIcon, PaymentBadge, PaymentMethodsInline } from '@/components/PaymentIcons';
 
 const perks = [
   { title: 'Livraison offerte', desc: "Dès 80€ d'achat", icon: <TruckIcon /> },
   { title: 'Retours faciles', desc: '30 jours pour changer d’avis', icon: <ReturnIcon /> },
-  { title: 'Paiement sécurisé', desc: 'CB, PayPal, Apple Pay', icon: <ShieldIcon /> },
+  { title: 'Paiement sécurisé', desc: <PaymentMethodsInline />, icon: <ShieldIcon /> },
   { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux', icon: <StarBadgeIcon /> },
 ];
 

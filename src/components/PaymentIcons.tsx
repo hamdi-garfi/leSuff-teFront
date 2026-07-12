@@ -1,4 +1,4 @@
-function CardIcon() {
+export function CardIcon() {
   return (
     <svg width="20" height="14" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.4">
       <rect x="1" y="1" width="22" height="14" rx="2" />
@@ -8,7 +8,7 @@ function CardIcon() {
   );
 }
 
-function PayPalIcon() {
+export function PayPalIcon() {
   return (
     <svg width="14" height="16" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4">
       <path d="M4 1.5h5.2c2.4 0 4 1.4 3.6 3.7-.4 2.6-2.4 4-4.9 4H5.6L4.6 15" strokeLinecap="round" strokeLinejoin="round" />
@@ -17,7 +17,7 @@ function PayPalIcon() {
   );
 }
 
-function AppleIcon() {
+export function AppleIcon() {
   return (
     <svg width="13" height="16" viewBox="0 0 24 24" fill="currentColor">
       <path d="M16.7 12.7c0-2.6 2.1-3.9 2.2-4-1.2-1.8-3.1-2-3.8-2-1.6-.2-3.1.9-3.9.9-.8 0-2.1-.9-3.4-.9-1.7 0-3.4 1-4.3 2.6-1.8 3.2-.5 7.9 1.3 10.5.9 1.3 1.9 2.7 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5.7-1 1-2 1.4-3.1-2.7-1-3.2-3.9-2.4-5.1z" />
@@ -60,6 +60,16 @@ export function StarBadgeIcon() {
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
       <path d="M12 2.5l2.7 5.7 6.1.7-4.5 4.3 1.2 6.1-5.5-3-5.5 3 1.2-6.1L3.2 8.9l6.1-.7z" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+export function PaymentMethodsInline() {
+  return (
+    <span className="inline-flex items-center gap-2 text-foreground/50">
+      <CardIcon />
+      <PayPalIcon />
+      <AppleIcon />
+    </span>
   );
 }
 
