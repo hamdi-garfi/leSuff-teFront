@@ -7,8 +7,16 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
   const router = useRouter();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'submitted'>('idle');
   const [error, setError] = useState<string | null>(null);
+
+  if (status === 'submitted') {
+    return (
+      <p className="text-sm text-foreground/60 border border-foreground/10 p-5 max-w-md">
+        Merci pour votre avis ! Il sera visible sur la fiche produit après validation par notre équipe.
+      </p>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -40,7 +48,7 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
     }
 
     setComment('');
-    setStatus('idle');
+    setStatus('submitted');
     router.refresh();
   }
 
