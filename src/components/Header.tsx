@@ -8,6 +8,7 @@ import { NavMegaMenu } from '@/components/NavMegaMenu';
 import { NAV_LABELS } from '@/lib/navLabels';
 import { WishlistHeaderLink } from '@/components/WishlistHeaderLink';
 import { RecentlyViewedHeaderLink } from '@/components/RecentlyViewedHeaderLink';
+import { SearchOverlay } from '@/components/SearchOverlay';
 
 export async function Header({ cartCount, user }: { cartCount: number; user: CurrentUser | null }) {
   const [categories, homepage] = await Promise.all([getCategories(), getHomepageSettings()]);
@@ -39,9 +40,7 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
 
         <div className="flex items-center gap-6 flex-1 justify-end">
           <ThemeToggle />
-          <Link href="/collection" className="hover:text-gold transition" aria-label="Rechercher">
-            <SearchIcon />
-          </Link>
+          <SearchOverlay />
           <RecentlyViewedHeaderLink />
           <WishlistHeaderLink />
           <Link
@@ -79,15 +78,6 @@ export async function Header({ cartCount, user }: { cartCount: number; user: Cur
         ))}
       </nav>
     </header>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="10.5" cy="10.5" r="6.5" />
-      <path d="M20 20 15.3 15.3" />
-    </svg>
   );
 }
 
