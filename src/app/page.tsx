@@ -33,9 +33,9 @@ export default async function HomePage() {
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-cover opacity-30"
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-surface/40 via-surface/70 to-surface" />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface/20 via-surface/50 to-surface" />
           </>
         ) : (
           <MountainBackdrop />
