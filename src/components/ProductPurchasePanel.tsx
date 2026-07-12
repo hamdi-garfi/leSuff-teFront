@@ -8,6 +8,9 @@ import { ColorSwatches } from '@/components/ColorSwatches';
 import { AddToCartForm } from '@/components/AddToCartForm';
 import { StarRating } from '@/components/StarRating';
 import { WishlistButton } from '@/components/WishlistButton';
+import { DeliveryEstimate } from '@/components/DeliveryEstimate';
+import { ProductInfoAccordion } from '@/components/ProductInfoAccordion';
+import { StickyMobileBuyBar } from '@/components/StickyMobileBuyBar';
 
 export function ProductPurchasePanel({
   product,
@@ -83,9 +86,11 @@ export function ProductPurchasePanel({
         </p>
         {product.description && <p className="text-foreground/60 mb-8 leading-relaxed">{product.description}</p>}
 
-        <AddToCartForm variants={variantsForColor} />
+        <AddToCartForm variants={variantsForColor} basePrice={product.basePrice} />
 
-        <dl className="mt-10 pt-6 border-t border-foreground/10 text-xs text-foreground/40 space-y-1">
+        <DeliveryEstimate inStock={variantsForColor.some((v) => v.stock > 0)} />
+
+        <dl className="mt-6 pt-6 border-t border-foreground/10 text-xs text-foreground/40 space-y-1">
           <div className="flex gap-2">
             <dt className="tracking-widest2">COULEUR</dt>
             <dd>{selectedColor}</dd>
@@ -103,8 +108,10 @@ export function ProductPurchasePanel({
           )}
         </dl>
 
-        {product.shippingNote && <p className="mt-4 text-xs text-foreground/50 leading-relaxed">{product.shippingNote}</p>}
+        <ProductInfoAccordion product={product} />
       </div>
+
+      <StickyMobileBuyBar basePrice={product.basePrice} compareAtPrice={product.compareAtPrice} variants={variantsForColor} />
     </div>
   );
 }

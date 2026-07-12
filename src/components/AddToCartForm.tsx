@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ProductVariant } from '@/lib/types';
 
-export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
+export function AddToCartForm({ variants, basePrice }: { variants: ProductVariant[]; basePrice: number }) {
   const router = useRouter();
   const availableVariants = variants.filter((v) => v.stock > 0);
   const [selectedId, setSelectedId] = useState<number | null>(availableVariants[0]?.id ?? null);
@@ -74,7 +74,7 @@ export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
         </div>
       </div>
 
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-4 flex items-center gap-3">
         <span className="text-xs tracking-widest2 text-foreground/60">QUANTITÉ</span>
         <div className="flex items-center border border-foreground/30">
           <button
@@ -97,6 +97,20 @@ export function AddToCartForm({ variants }: { variants: ProductVariant[] }) {
           <span className="text-xs text-gold">Plus que {selectedVariant.stock} en stock</span>
         )}
       </div>
+
+      {selectedVariant && (
+        <div className="mb-6 text-xs text-foreground/40 space-y-0.5">
+          <p>
+            Réf. {selectedVariant.sku} · {selectedVariant.stock} en stock
+          </p>
+          {selectedVariant.price !== basePrice && (
+            <p className="text-gold">
+              {selectedVariant.price > basePrice ? '+' : ''}
+              {(selectedVariant.price - basePrice).toFixed(2)} € pour cette taille (soit {selectedVariant.price.toFixed(2)} €)
+            </p>
+          )}
+        </div>
+      )}
 
       <button
         type="button"

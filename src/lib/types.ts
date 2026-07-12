@@ -29,6 +29,11 @@ export type Product = {
   imageUrl: string | null;
   galleryImages: string[];
   productType: string | null;
+  material: string | null;
+  fit: string | null;
+  fabricWeightGsm: number | null;
+  origin: string | null;
+  careInstructions: string | null;
   tags: string[];
   videoUrl: string | null;
   lengthCm: number | null;

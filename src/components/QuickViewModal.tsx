@@ -82,7 +82,7 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
           {colors.length > 1 && <ColorSwatches colors={colors} selected={selectedColor} onSelect={setSelectedColor} />}
 
           <div className="mt-6">
-            <AddToCartForm variants={variantsForColor} />
+            <AddToCartForm variants={variantsForColor} basePrice={product.basePrice} />
           </div>
 
           <Link href={`/produit/${product.slug}`} className="inline-block mt-4 text-xs text-foreground/50 hover:text-gold transition">

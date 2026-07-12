@@ -8,6 +8,41 @@ import { ProductPurchasePanel } from '@/components/ProductPurchasePanel';
 import { StarRating } from '@/components/StarRating';
 import { ReviewForm } from '@/components/ReviewForm';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
+import type { Product } from '@/lib/types';
+
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
+
+function buildProductJsonLd(product: Product, reviews: { average: number | null; count: number }) {
+  const url = `${SITE_URL}/produit/${product.slug}`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProductGroup',
+    name: product.name,
+    description: product.description ?? undefined,
+    url,
+    productGroupID: String(product.id),
+    variesBy: ['https://schema.org/size', 'https://schema.org/color'],
+    ...(reviews.count > 0 && reviews.average !== null
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: reviews.average, reviewCount: reviews.count } }
+      : {}),
+    hasVariant: product.variants.map((v) => ({
+      '@type': 'Product',
+      name: `${product.name} — ${v.color} — ${v.size}`,
+      sku: v.sku,
+      color: v.color,
+      size: v.size,
+      image: v.imageUrl ?? product.imageUrl ?? undefined,
+      offers: {
+        '@type': 'Offer',
+        url,
+        priceCurrency: 'EUR',
+        price: v.price,
+        availability: v.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      },
+    })),
+  };
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
@@ -51,7 +86,12 @@ export default async function ProductPage({
   const related = relatedResult.items.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 md:px-8 py-16">
+    <div className="mx-auto max-w-7xl px-6 md:px-8 py-16 pb-24 md:pb-16">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildProductJsonLd(product, { average: reviews.average, count: reviews.count })) }}
+      />
       <p className="text-xs text-foreground/40 mb-8">
         <Link href="/" className="hover:text-gold">
           Accueil
