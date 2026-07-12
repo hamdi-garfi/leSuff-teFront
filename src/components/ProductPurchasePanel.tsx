@@ -11,12 +11,16 @@ import { StarRating } from '@/components/StarRating';
 export function ProductPurchasePanel({
   product,
   reviews,
+  initialColor,
 }: {
   product: Product;
   reviews: { average: number | null; count: number };
+  initialColor?: string;
 }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
-  const [selectedColor, setSelectedColor] = useState(colors[0] ?? '');
+  const [selectedColor, setSelectedColor] = useState(
+    initialColor && colors.includes(initialColor) ? initialColor : colors[0] ?? '',
+  );
 
   const colorImage = useMemo(() => {
     const variantWithImage = product.variants.find((v) => v.color === selectedColor && v.imageUrl);

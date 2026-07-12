@@ -13,7 +13,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: product ? `${product.name} — Le Suffète Classic` : 'Produit introuvable' };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { color?: string };
+}) {
   const product = await getProductBySlug(params.slug);
 
   if (!product || !product.isPublished) {
@@ -40,7 +46,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
         / <span className="text-foreground/70">{product.name}</span>
       </p>
 
-      <ProductPurchasePanel product={product} reviews={{ average: reviews.average, count: reviews.count }} />
+      <ProductPurchasePanel
+        product={product}
+        reviews={{ average: reviews.average, count: reviews.count }}
+        initialColor={searchParams.color}
+      />
 
       {product.videoUrl && (
         <section className="mt-16 max-w-3xl">
