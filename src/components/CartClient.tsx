@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Address, Cart, ShippingZone } from '@/lib/types';
@@ -28,6 +28,8 @@ export function CartClient({
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponCode, setCouponCode] = useState(initialCouponCode ?? '');
+  const [couponPreview, setCouponPreview] = useState<{ valid: boolean; discount?: number; freeShipping?: boolean; error?: string } | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
   const [giftCardCode, setGiftCardCode] = useState('');
   const [showGiftCard, setShowGiftCard] = useState(false);
   const [country, setCountry] = useState('France');
@@ -52,6 +54,22 @@ export function CartClient({
 
   const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
   const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
+  const discountAmount = couponPreview?.valid ? (couponPreview.discount ?? 0) : 0;
+
+  useEffect(() => {
+    const code = couponCode.trim();
+    if (!code) {
+      setCouponPreview(null);
+      return;
+    }
+    setCouponChecking(true);
+    const timeout = setTimeout(async () => {
+      const res = await fetch(`/api/cart/coupon-preview?code=${encodeURIComponent(code)}`);
+      setCouponPreview(res.ok ? await res.json() : { valid: false, error: 'erreur de vérification' });
+      setCouponChecking(false);
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [couponCode]);
 
   async function updateQuantity(itemId: number, quantity: number) {
     const res = await fetch(`/api/cart/items/${itemId}`, {
@@ -393,6 +411,12 @@ export function CartClient({
           </div>
         )}
 
+        {couponPreview?.valid && discountAmount > 0 && (
+          <div className="flex justify-between text-sm mb-2 text-gold">
+            <span>Réduction ({couponCode})</span>
+            <span>-{discountAmount.toFixed(2)} €</span>
+          </div>
+        )}
         <div className="flex justify-between text-sm mb-4 text-foreground/50">
           <span>Livraison{selectedZone && cart.total < FREE_SHIPPING_THRESHOLD ? ` (${selectedZone.estimatedDaysMin}–${selectedZone.estimatedDaysMax}j)` : ''}</span>
           <span>
@@ -400,14 +424,14 @@ export function CartClient({
               ? cart.total >= FREE_SHIPPING_THRESHOLD
                 ? 'Offerte'
                 : 'Choisir un pays'
-              : shippingCost === 0
+              : shippingCost === 0 || couponPreview?.freeShipping
                 ? 'Offerte'
                 : `${shippingCost.toFixed(2)} €`}
           </span>
         </div>
         <div className="flex justify-between text-base border-t border-foreground/10 pt-4 mb-6">
           <span>Total</span>
-          <span>{(cart.total + (shippingCost ?? 0)).toFixed(2)} €</span>
+          <span>{Math.max(0, cart.total - discountAmount + (couponPreview?.freeShipping ? 0 : (shippingCost ?? 0))).toFixed(2)} €</span>
         </div>
 
         <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">CODE PROMO</label>
@@ -416,8 +440,18 @@ export function CartClient({
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           placeholder="BIENVENUE10"
-          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold mb-4"
+          className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
         />
+        {couponChecking && <p className="text-xs text-foreground/40 mt-1 mb-4">Vérification…</p>}
+        {!couponChecking && couponPreview?.valid && (
+          <p className="text-xs text-gold mt-1 mb-4">
+            ✓ Code appliqué{discountAmount > 0 ? ` — -${discountAmount.toFixed(2)} €` : couponPreview.freeShipping ? ' — livraison offerte' : ''}
+          </p>
+        )}
+        {!couponChecking && couponPreview && !couponPreview.valid && (
+          <p className="text-xs text-red-400 mt-1 mb-4">{couponPreview.error}</p>
+        )}
+        {!couponChecking && !couponPreview && <div className="mb-4" />}
 
         {showGiftCard ? (
           <>
