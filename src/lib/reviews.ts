@@ -6,6 +6,15 @@ export type Review = {
   comment: string | null;
   author: string;
   createdAt: string;
+  verifiedPurchase: boolean;
+  sizeBought: string | null;
+  colorBought: string | null;
+  fitRating: number | null;
+  qualityRating: number | null;
+  comfortRating: number | null;
+  photoUrl: string | null;
+  brandReply: string | null;
+  brandReplyAt: string | null;
 };
 
 export type ProductReviews = {

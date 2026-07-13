@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { getProductBySlug, getProducts } from '@/lib/catalog';
 import { getProductReviews } from '@/lib/reviews';
 import { getCurrentUser } from '@/lib/session';
+import { getHomepageSettings } from '@/lib/homepage';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductPurchasePanel } from '@/components/ProductPurchasePanel';
-import { StarRating } from '@/components/StarRating';
 import { ReviewForm } from '@/components/ReviewForm';
+import { ReviewsList } from '@/components/ReviewsList';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
 import type { Product } from '@/lib/types';
 
@@ -78,10 +79,11 @@ export default async function ProductPage({
     notFound();
   }
 
-  const [relatedResult, reviews, user] = await Promise.all([
+  const [relatedResult, reviews, user, homepageSettings] = await Promise.all([
     getProducts({ category: product.category.slug, limit: 5 }),
     getProductReviews(product.id),
     getCurrentUser(),
+    getHomepageSettings(),
   ]);
   const related = relatedResult.items.filter((p) => p.id !== product.id).slice(0, 4);
 
@@ -119,26 +121,29 @@ export default async function ProductPage({
       )}
 
       <section className="mt-24">
-        <h2 className="section-title">AVIS CLIENTS</h2>
-        <div className="section-title-underline" />
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="section-title">AVIS CLIENTS</h2>
+            <div className="section-title-underline" />
+          </div>
+          {homepageSettings.googleReviewUrl && (
+            <a
+              href={homepageSettings.googleReviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition"
+            >
+              Laissez-nous un avis sur Google
+            </a>
+          )}
+        </div>
 
         <div className="grid md:grid-cols-3 gap-12">
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2">
             {reviews.items.length === 0 ? (
               <p className="text-foreground/50 text-sm">Aucun avis pour ce produit pour le moment.</p>
             ) : (
-              reviews.items.map((review) => (
-                <div key={review.id} className="border-b border-foreground/10 pb-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <StarRating value={review.rating} />
-                    <span className="text-sm">{review.author}</span>
-                  </div>
-                  <p className="text-xs text-foreground/40 mb-2">
-                    {new Date(review.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  </p>
-                  {review.comment && <p className="text-foreground/70 text-sm">{review.comment}</p>}
-                </div>
-              ))
+              <ReviewsList reviews={reviews.items} />
             )}
           </div>
           <ReviewForm productId={product.id} isAuthenticated={!!user} />

@@ -98,6 +98,7 @@ export type HomepageSettings = {
   heroButtonLink: string;
   promoBannerText: string;
   promoBannerEnabled: boolean;
+  googleReviewUrl: string | null;
 };
 
 export type WishlistItem = {
