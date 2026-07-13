@@ -38,6 +38,9 @@ export default async function AccountPage() {
       </div>
 
       <div className="flex flex-wrap gap-3 mb-12">
+        <Link href="/compte/portefeuille" className="text-xs tracking-widest2 uppercase border border-gold text-gold px-4 py-2.5 hover:bg-gold hover:text-background transition">
+          Mon portefeuille
+        </Link>
         <Link href="/compte/adresses" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
           Mes adresses
         </Link>
