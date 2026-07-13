@@ -18,6 +18,9 @@ export async function POST(request: Request) {
     return response;
   } catch (e) {
     if (e instanceof BackendError) {
+      if (e.status === 429) {
+        return NextResponse.json({ error: 'Trop de tentatives, veuillez réessayer dans quelques minutes.' }, { status: 429 });
+      }
       return NextResponse.json({ error: 'identifiants invalides' }, { status: e.status });
     }
     return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
