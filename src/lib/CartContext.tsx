@@ -9,11 +9,20 @@ type CartContextValue = {
   openDrawer: () => void;
   closeDrawer: () => void;
   refresh: () => Promise<void>;
+  freeShippingThreshold: number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children, initialCart = null }: { children: React.ReactNode; initialCart?: Cart | null }) {
+export function CartProvider({
+  children,
+  initialCart = null,
+  freeShippingThreshold,
+}: {
+  children: React.ReactNode;
+  initialCart?: Cart | null;
+  freeShippingThreshold: number;
+}) {
   const [cart, setCart] = useState<Cart | null>(initialCart);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -24,7 +33,7 @@ export function CartProvider({ children, initialCart = null }: { children: React
 
   return (
     <CartContext.Provider
-      value={{ cart, drawerOpen, openDrawer: () => setDrawerOpen(true), closeDrawer: () => setDrawerOpen(false), refresh }}
+      value={{ cart, drawerOpen, openDrawer: () => setDrawerOpen(true), closeDrawer: () => setDrawerOpen(false), refresh, freeShippingThreshold }}
     >
       {children}
     </CartContext.Provider>

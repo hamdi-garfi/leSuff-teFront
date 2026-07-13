@@ -5,12 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { colorToHex } from '@/lib/colors';
 import { useCart } from '@/lib/CartContext';
-import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
 import { CartVariantPicker } from '@/components/CartVariantPicker';
 
 export function CartDrawer() {
   const router = useRouter();
-  const { cart, drawerOpen, closeDrawer, refresh } = useCart();
+  const { cart, drawerOpen, closeDrawer, refresh, freeShippingThreshold: FREE_SHIPPING_THRESHOLD } = useCart();
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

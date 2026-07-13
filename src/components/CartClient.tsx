@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Address, Cart, ShippingZone } from '@/lib/types';
 import { colorToHex } from '@/lib/colors';
-import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants';
 import { useCart } from '@/lib/CartContext';
 import { CartVariantPicker } from '@/components/CartVariantPicker';
 
@@ -23,7 +22,7 @@ export function CartClient({
   initialCouponCode?: string;
 }) {
   const router = useRouter();
-  const { refresh: refreshCartContext } = useCart();
+  const { refresh: refreshCartContext, freeShippingThreshold: FREE_SHIPPING_THRESHOLD } = useCart();
   const [cart, setCart] = useState(initialCart);
   const [isPending, startTransition] = useTransition();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);

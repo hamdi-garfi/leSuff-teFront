@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getCart, getCurrentUser } from '@/lib/session';
+import { getStoreSettings } from '@/lib/storeSettings';
 import { WishlistProvider } from '@/lib/WishlistContext';
 import { CartProvider } from '@/lib/CartContext';
 import { CartDrawer } from '@/components/CartDrawer';
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
+  const [user, cart, storeSettings] = await Promise.all([getCurrentUser(), getCart(), getStoreSettings()]);
 
   return (
     <html lang="fr" className={`${cormorant.variable} ${montserrat.variable}`}>
@@ -40,7 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-sans">
         <WishlistProvider isAuthenticated={!!user}>
-          <CartProvider initialCart={cart}>
+          <CartProvider initialCart={cart} freeShippingThreshold={storeSettings.freeShippingThreshold}>
             <Header user={user} />
             <main>{children}</main>
             <Footer />
