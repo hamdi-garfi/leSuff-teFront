@@ -137,7 +137,7 @@ export function CartDrawer() {
                           +
                         </button>
                       </div>
-                      <button type="button" className="text-xs text-foreground/40 hover:text-red-400" onClick={() => removeItem(item.id)}>
+                      <button type="button" className="text-xs text-red-400/70 hover:text-red-400" onClick={() => removeItem(item.id)}>
                         Retirer
                       </button>
                     </div>

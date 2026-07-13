@@ -175,7 +175,7 @@ export function ReviewForm({ productId, isAuthenticated }: { productId: number; 
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photoUrl} alt="" className="w-14 h-14 object-cover" />
-            <button type="button" onClick={() => setPhotoUrl(null)} className="text-xs text-foreground/50 hover:text-red-400">
+            <button type="button" onClick={() => setPhotoUrl(null)} className="text-xs text-red-400/70 hover:text-red-400">
               Retirer
             </button>
           </div>
