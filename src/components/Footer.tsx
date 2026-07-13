@@ -77,7 +77,7 @@ export async function Footer() {
 
       <div className="mx-auto max-w-7xl px-6 md:px-8 pb-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-foreground/40">
         <span>© {new Date().getFullYear()} Le Suffète Classic — Tous droits réservés</span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-center gap-2">
           <PaymentBadge method="visa" />
           <PaymentBadge method="mastercard" />
           <PaymentBadge method="paypal" />
