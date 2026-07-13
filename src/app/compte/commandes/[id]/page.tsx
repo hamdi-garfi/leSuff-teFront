@@ -165,7 +165,9 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                   <span>{r.number}</span>
                   <span className="text-xs text-gold">{RETURN_STATUS_LABELS[r.status] ?? r.status}</span>
                 </div>
-                <p className="text-xs text-foreground/40">{RETURN_REASON_LABELS[r.reason] ?? r.reason}</p>
+                <p className="text-xs text-foreground/40">
+                  {RETURN_REASON_LABELS[r.reason] ?? r.reason} · {r.type === 'exchange' ? 'Échange' : 'Remboursement'}
+                </p>
               </div>
             ))}
           </div>

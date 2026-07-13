@@ -51,6 +51,8 @@ export type AccountReturnRequest = {
   number: string;
   status: string;
   reason: string;
+  type: string;
+  photoUrl: string | null;
   refundAmount: number | null;
   orderId: number;
   orderNumber: string;
