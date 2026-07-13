@@ -11,73 +11,79 @@ type CategorySlot = {
   products: Product[];
 };
 
-type Selection = { product: Product; variant: ProductVariant };
+type Selection = { key: string; product: Product; variant: ProductVariant };
 
 const BUNDLE_DISCOUNT_RATE = 0.1;
 const BUNDLE_COUPON_CODE = 'TENUE10';
 const MIN_ITEMS_FOR_DISCOUNT = 2;
 
-function ProductPicker({
-  products,
-  selected,
-  onSelect,
+let selectionCounter = 0;
+function nextSelectionKey() {
+  selectionCounter += 1;
+  return `sel-${selectionCounter}`;
+}
+
+function SelectedItemCard({
+  selection,
+  onChange,
+  onRemove,
 }: {
-  products: Product[];
-  selected: Selection | null;
-  onSelect: (selection: Selection | null) => void;
+  selection: Selection;
+  onChange: (variant: ProductVariant) => void;
+  onRemove: () => void;
 }) {
-  const chosenProduct = selected?.product ?? null;
+  const { product, variant } = selection;
+  const colors = Array.from(new Set(product.variants.map((v) => v.color)));
+  const sizesForColor = product.variants.filter((v) => v.color === variant.color);
 
-  if (chosenProduct) {
-    const color = selected!.variant.color;
-    const colors = Array.from(new Set(chosenProduct.variants.map((v) => v.color)));
-    const sizesForColor = chosenProduct.variants.filter((v) => v.color === color);
-
-    return (
-      <div className="border border-gold/40 p-4">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm">{chosenProduct.name}</p>
-          <button type="button" onClick={() => onSelect(null)} className="text-xs text-foreground/50 hover:text-red-400">
-            Changer
-          </button>
-        </div>
-        {colors.length > 1 && (
-          <div className="flex gap-2 mb-3">
-            {colors.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  const firstVariant = chosenProduct.variants.find((v) => v.color === c);
-                  if (firstVariant) onSelect({ product: chosenProduct, variant: firstVariant });
-                }}
-                className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-gold' : 'border-foreground/20'}`}
-                style={{ backgroundColor: colorToHex(c) }}
-                aria-label={c}
-              />
-            ))}
-          </div>
-        )}
-        <div className="flex flex-wrap gap-2">
-          {sizesForColor.map((v) => (
+  return (
+    <div className="border border-gold/40 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm">{product.name}</p>
+        <button type="button" onClick={onRemove} className="text-xs text-foreground/50 hover:text-red-400">
+          Retirer
+        </button>
+      </div>
+      {colors.length > 1 && (
+        <div className="flex gap-2 mb-3">
+          {colors.map((c) => (
             <button
-              key={v.id}
+              key={c}
               type="button"
-              disabled={v.stock === 0}
-              onClick={() => onSelect({ product: chosenProduct, variant: v })}
-              className={`shrink-0 min-w-[40px] px-2 py-1.5 text-xs border ${
-                selected?.variant.id === v.id ? 'border-gold text-gold' : 'border-foreground/20'
-              } ${v.stock === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:border-gold'}`}
-            >
-              {v.size}
-            </button>
+              onClick={() => {
+                const sameSize = product.variants.find((v) => v.color === c && v.size === variant.size);
+                const fallback = product.variants.find((v) => v.color === c);
+                const nextVariant = sameSize ?? fallback;
+                if (nextVariant) onChange(nextVariant);
+              }}
+              className={`w-6 h-6 rounded-full border-2 ${variant.color === c ? 'border-gold' : 'border-foreground/20'}`}
+              style={{ backgroundColor: colorToHex(c) }}
+              aria-label={c}
+            />
           ))}
         </div>
-        <p className="text-sm text-gold mt-3">{selected!.variant.price.toFixed(2)} €</p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {sizesForColor.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            disabled={v.stock === 0}
+            onClick={() => onChange(v)}
+            className={`shrink-0 min-w-[40px] px-2 py-1.5 text-xs border ${
+              variant.id === v.id ? 'border-gold text-gold' : 'border-foreground/20'
+            } ${v.stock === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:border-gold'}`}
+          >
+            {v.size}
+          </button>
+        ))}
       </div>
-    );
-  }
+      <p className="text-sm text-gold mt-3">{variant.price.toFixed(2)} €</p>
+    </div>
+  );
+}
 
+function ProductGrid({ products, onPick }: { products: Product[]; onPick: (selection: Selection) => void }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {products.map((product) => {
@@ -86,7 +92,7 @@ function ProductPicker({
           <button
             key={product.id}
             type="button"
-            onClick={() => firstAvailable && onSelect({ product, variant: firstAvailable })}
+            onClick={() => firstAvailable && onPick({ key: nextSelectionKey(), product, variant: firstAvailable })}
             className="text-left border border-foreground/10 hover:border-gold/50 transition p-2"
           >
             <div className="aspect-square bg-surface2 mb-2 overflow-hidden">
@@ -104,16 +110,82 @@ function ProductPicker({
   );
 }
 
+function CategoryPicker({
+  slot,
+  selections,
+  onAdd,
+  onChange,
+  onRemove,
+}: {
+  slot: CategorySlot;
+  selections: Selection[];
+  onAdd: (selection: Selection) => void;
+  onChange: (key: string, variant: ProductVariant) => void;
+  onRemove: (key: string) => void;
+}) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const showGrid = pickerOpen || selections.length === 0;
+
+  return (
+    <div className="space-y-3">
+      {selections.map((s) => (
+        <SelectedItemCard
+          key={s.key}
+          selection={s}
+          onChange={(variant) => onChange(s.key, variant)}
+          onRemove={() => onRemove(s.key)}
+        />
+      ))}
+
+      {showGrid ? (
+        <ProductGrid
+          products={slot.products}
+          onPick={(selection) => {
+            onAdd(selection);
+            setPickerOpen(false);
+          }}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition"
+        >
+          + Ajouter un autre article
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
   const router = useRouter();
-  const [selections, setSelections] = useState<Record<string, Selection | null>>({});
+  const [selectionsByCategory, setSelectionsByCategory] = useState<Record<string, Selection[]>>({});
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const chosen = Object.values(selections).filter((s): s is Selection => !!s);
+  const chosen = Object.values(selectionsByCategory).flat();
   const subtotal = chosen.reduce((sum, s) => sum + s.variant.price, 0);
   const eligibleForDiscount = chosen.length >= MIN_ITEMS_FOR_DISCOUNT;
   const discount = eligibleForDiscount ? subtotal * BUNDLE_DISCOUNT_RATE : 0;
+
+  function addToCategory(categorySlug: string, selection: Selection) {
+    setSelectionsByCategory((prev) => ({ ...prev, [categorySlug]: [...(prev[categorySlug] ?? []), selection] }));
+  }
+
+  function changeInCategory(categorySlug: string, key: string, variant: ProductVariant) {
+    setSelectionsByCategory((prev) => ({
+      ...prev,
+      [categorySlug]: (prev[categorySlug] ?? []).map((s) => (s.key === key ? { ...s, variant } : s)),
+    }));
+  }
+
+  function removeFromCategory(categorySlug: string, key: string) {
+    setSelectionsByCategory((prev) => ({
+      ...prev,
+      [categorySlug]: (prev[categorySlug] ?? []).filter((s) => s.key !== key),
+    }));
+  }
 
   async function handleAddAll() {
     if (chosen.length === 0) return;
@@ -148,10 +220,12 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
             {slot.products.length === 0 ? (
               <p className="text-sm text-foreground/40">Aucun article disponible dans cette catégorie.</p>
             ) : (
-              <ProductPicker
-                products={slot.products}
-                selected={selections[slot.categorySlug] ?? null}
-                onSelect={(selection) => setSelections((prev) => ({ ...prev, [slot.categorySlug]: selection }))}
+              <CategoryPicker
+                slot={slot}
+                selections={selectionsByCategory[slot.categorySlug] ?? []}
+                onAdd={(selection) => addToCategory(slot.categorySlug, selection)}
+                onChange={(key, variant) => changeInCategory(slot.categorySlug, key, variant)}
+                onRemove={(key) => removeFromCategory(slot.categorySlug, key)}
               />
             )}
           </div>
@@ -161,11 +235,11 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
       <div className="border border-foreground/10 p-6 h-fit sticky top-24">
         <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">VOTRE TENUE</h2>
         {chosen.length === 0 ? (
-          <p className="text-sm text-foreground/40">Choisissez au moins un article dans chaque catégorie.</p>
+          <p className="text-sm text-foreground/40">Choisissez au moins un article dans une catégorie.</p>
         ) : (
           <ul className="space-y-2 mb-4">
             {chosen.map((s) => (
-              <li key={s.variant.id} className="flex justify-between text-sm">
+              <li key={s.key} className="flex justify-between text-sm">
                 <span>
                   {s.product.name} ({s.variant.size}, {s.variant.color})
                 </span>
