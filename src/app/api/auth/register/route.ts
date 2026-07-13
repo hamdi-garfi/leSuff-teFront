@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { backendFetch, BackendError } from '@/lib/backend';
+import { backendFetch, handleBackendError } from '@/lib/backend';
 import { AUTH_COOKIE, authCookieOptions } from '@/lib/auth';
 import { mergeGuestCartIfPresent } from '@/lib/guestCart';
 
@@ -17,9 +17,6 @@ export async function POST(request: Request) {
     await mergeGuestCartIfPresent(data.token, response);
     return response;
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }

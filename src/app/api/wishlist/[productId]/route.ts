@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { backendFetch, BackendError } from '@/lib/backend';
+import { backendFetch, handleBackendError } from '@/lib/backend';
 import { getTokenFromCookies } from '@/lib/auth';
 
 export async function DELETE(_request: Request, { params }: { params: { productId: string } }) {
@@ -12,9 +12,6 @@ export async function DELETE(_request: Request, { params }: { params: { productI
     const data = await backendFetch<{ success: boolean }>(`/api/wishlist/${params.productId}`, { method: 'DELETE', token });
     return NextResponse.json(data);
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }

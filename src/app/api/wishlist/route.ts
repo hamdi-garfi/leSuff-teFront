@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { backendFetch, BackendError } from '@/lib/backend';
+import { backendFetch, handleBackendError } from '@/lib/backend';
 import { getTokenFromCookies } from '@/lib/auth';
 import type { WishlistItem } from '@/lib/types';
 
@@ -13,10 +13,7 @@ export async function GET() {
     const items = await backendFetch<WishlistItem[]>('/api/wishlist', { token, cache: 'no-store' });
     return NextResponse.json(items);
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }
 
@@ -32,9 +29,6 @@ export async function POST(request: Request) {
     const item = await backendFetch<WishlistItem>('/api/wishlist', { method: 'POST', token, body: payload });
     return NextResponse.json(item, { status: 201 });
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }

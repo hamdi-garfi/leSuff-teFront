@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { backendFetch, BackendError } from '@/lib/backend';
+import { backendFetch, handleBackendError } from '@/lib/backend';
 import { getTokenFromCookies } from '@/lib/auth';
 import type { Address } from '@/lib/types';
 
@@ -19,10 +19,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     });
     return NextResponse.json(address);
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }
 
@@ -39,9 +36,6 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
     });
     return NextResponse.json(result);
   } catch (e) {
-    if (e instanceof BackendError) {
-      return NextResponse.json(e.body, { status: e.status });
-    }
-    return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
+    return handleBackendError(e);
   }
 }

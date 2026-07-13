@@ -1,19 +1,29 @@
+import { NextResponse } from 'next/server';
+import { AUTH_COOKIE } from '@/lib/auth';
+
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL ?? 'http://app:8000';
 
-function normalizeErrorBody(status: number, body: unknown): { error: string; [key: string]: unknown } {
+function normalizeErrorBody(status: number, body: unknown): { error: string; code?: string; [key: string]: unknown } {
+  // 401 always gets the friendly, actionable French message — Lexik's raw "Expired
+  // JWT Token" (and similar) is technical, in English, and gives the user nothing to
+  // do. code: 'session_expired' lets callers offer a real recovery action.
+  if (status === 401) {
+    return { error: 'Votre session a expiré, veuillez vous reconnecter.', code: 'session_expired' };
+  }
+
   if (typeof body === 'object' && body !== null) {
     const obj = body as Record<string, unknown>;
     if (typeof obj.error === 'string') {
       return obj as { error: string };
     }
     // Lexik JWT (and some other Symfony error responses) use "message" instead of
-    // "error" — without this, expired/invalid tokens surfaced as a generic fallback
-    // string everywhere instead of a message a user could actually act on.
+    // "error" — without this, other errors surfaced as a generic fallback string
+    // everywhere instead of a message a user could actually act on.
     if (typeof obj.message === 'string') {
       return { ...obj, error: obj.message };
     }
   }
-  return { error: status === 401 ? 'session expirée, veuillez vous reconnecter' : 'unexpected error' };
+  return { error: 'unexpected error' };
 }
 
 export class BackendError extends Error {
@@ -60,4 +70,20 @@ export async function backendFetch<T>(path: string, options: BackendFetchOptions
   }
 
   return data as T;
+}
+
+/**
+ * Shared catch-block handler for API proxy routes: builds the error response and, for
+ * an expired/invalid session (401), also clears the now-useless auth cookie so the
+ * client stops presenting the user as logged in while every request keeps failing.
+ */
+export function handleBackendError(e: unknown): NextResponse {
+  if (e instanceof BackendError) {
+    const response = NextResponse.json(e.body, { status: e.status });
+    if (e.status === 401) {
+      response.cookies.delete(AUTH_COOKIE);
+    }
+    return response;
+  }
+  return NextResponse.json({ error: 'unexpected error' }, { status: 500 });
 }
