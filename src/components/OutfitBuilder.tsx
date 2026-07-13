@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   DndContext,
   DragOverlay,
@@ -196,6 +197,10 @@ function OutfitFrame({
   );
 }
 
+const DRAFT_STORAGE_KEY = 'suffete_outfit_draft';
+
+type Draft = { selections: Selection[]; activeSlugs: string[] };
+
 export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
   const router = useRouter();
   const [selections, setSelections] = useState<Selection[]>([]);
@@ -204,6 +209,38 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
   const [draggedProduct, setDraggedProduct] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+
+  // Restore a saved draft after mount (not in the initial state) to avoid an SSR/client
+  // hydration mismatch, since the server render never has access to localStorage.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (raw) {
+        const draft = JSON.parse(raw) as Draft;
+        if (draft.selections?.length > 0) {
+          selectionCounter = Math.max(selectionCounter, draft.selections.length);
+          setSelections(draft.selections);
+        }
+        if (draft.activeSlugs?.length > 0) {
+          setActiveSlugs(draft.activeSlugs);
+        }
+      }
+    } catch {
+      // Corrupted or unavailable storage — just start with an empty outfit.
+    }
+    setDraftLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!draftLoaded) return;
+    if (selections.length === 0) {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+      return;
+    }
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ selections, activeSlugs } satisfies Draft));
+  }, [selections, activeSlugs, draftLoaded]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -281,6 +318,7 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
     if (selections.length === 0) return;
     setAdding(true);
     setError(null);
+    setSessionExpired(false);
 
     for (const s of selections) {
       const res = await fetch('/api/cart/items', {
@@ -291,11 +329,13 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
       if (!res.ok) {
         const data = await res.json();
         setError(data.error ?? "Impossible d'ajouter un article au panier.");
+        setSessionExpired(data.code === 'session_expired');
         setAdding(false);
         return;
       }
     }
 
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
     const promoParam = eligibleForDiscount ? `?promo=${BUNDLE_COUPON_CODE}` : '';
     router.push(`/panier${promoParam}`);
     router.refresh();
@@ -395,7 +435,19 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-400 mt-3">
+              {error}
+              {sessionExpired && (
+                <>
+                  {' '}
+                  <Link href="/compte/connexion?next=tenue" className="text-gold hover:underline">
+                    Se reconnecter
+                  </Link>
+                </>
+              )}
+            </p>
+          )}
 
           <button
             type="button"
