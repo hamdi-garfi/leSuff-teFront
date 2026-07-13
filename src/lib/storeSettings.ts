@@ -10,6 +10,10 @@ export type StoreSettings = {
   socialFacebook: string | null;
   socialTiktok: string | null;
   maintenanceModeEnabled: boolean;
+  expressDeliverySurcharge: number;
+  relayPointDiscount: number;
+  relayPointEnabled: boolean;
+  expressDeliveryEnabled: boolean;
 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {

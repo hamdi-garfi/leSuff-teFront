@@ -41,7 +41,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-sans">
         <WishlistProvider isAuthenticated={!!user}>
-          <CartProvider initialCart={cart} freeShippingThreshold={storeSettings.freeShippingThreshold}>
+          <CartProvider
+            initialCart={cart}
+            freeShippingThreshold={storeSettings.freeShippingThreshold}
+            expressDeliverySurcharge={storeSettings.expressDeliverySurcharge}
+            relayPointDiscount={storeSettings.relayPointDiscount}
+            relayPointEnabled={storeSettings.relayPointEnabled}
+            expressDeliveryEnabled={storeSettings.expressDeliveryEnabled}
+          >
             <Header user={user} />
             <main>{children}</main>
             <Footer />

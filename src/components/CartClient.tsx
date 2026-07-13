@@ -22,7 +22,14 @@ export function CartClient({
   initialCouponCode?: string;
 }) {
   const router = useRouter();
-  const { refresh: refreshCartContext, freeShippingThreshold: FREE_SHIPPING_THRESHOLD } = useCart();
+  const {
+    refresh: refreshCartContext,
+    freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+    expressDeliverySurcharge,
+    relayPointDiscount,
+    relayPointEnabled,
+    expressDeliveryEnabled,
+  } = useCart();
   const [cart, setCart] = useState(initialCart);
   const [isPending, startTransition] = useTransition();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -34,6 +41,7 @@ export function CartClient({
   const [showGiftCard, setShowGiftCard] = useState(false);
   const [country, setCountry] = useState('France');
   const [showCountryPicker, setShowCountryPicker] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState<'home' | 'relay_point' | 'express'>('home');
   const [addressId, setAddressId] = useState<number | null>(
     addresses.find((a) => a.type === 'shipping')?.id ?? addresses[0]?.id ?? null,
   );
@@ -53,7 +61,15 @@ export function CartClient({
   const [guestComplement, setGuestComplement] = useState('');
 
   const selectedZone = useMemo(() => shippingZones.find((z) => z.country === country) ?? null, [shippingZones, country]);
-  const shippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
+  const baseShippingCost = !selectedZone ? null : cart && cart.total >= FREE_SHIPPING_THRESHOLD ? 0 : selectedZone.price;
+  const shippingCost =
+    baseShippingCost === null
+      ? null
+      : deliveryMode === 'relay_point'
+        ? Math.max(0, baseShippingCost - relayPointDiscount)
+        : deliveryMode === 'express'
+          ? baseShippingCost + expressDeliverySurcharge
+          : baseShippingCost;
   const discountAmount = couponPreview?.valid ? (couponPreview.discount ?? 0) : 0;
 
   useEffect(() => {
@@ -127,6 +143,7 @@ export function CartClient({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         country,
+        deliveryMode,
         ...(couponCode ? { couponCode } : {}),
         ...(giftCardCode ? { giftCardCode } : {}),
         ...(giftWrap ? { giftWrap: true, giftMessage, hidePriceOnSlip } : {}),
@@ -295,6 +312,36 @@ export function CartClient({
             </button>
           </div>
         )}
+
+        <div className="mb-4">
+          <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">MODE DE LIVRAISON</label>
+          <div className="space-y-2">
+            <label className="flex items-center justify-between text-sm border border-foreground/15 px-3 py-2 cursor-pointer has-[:checked]:border-gold">
+              <span className="flex items-center gap-2">
+                <input type="radio" name="deliveryMode" value="home" checked={deliveryMode === 'home'} onChange={() => setDeliveryMode('home')} />
+                Livraison à domicile
+              </span>
+            </label>
+            {relayPointEnabled && (
+              <label className="flex items-center justify-between text-sm border border-foreground/15 px-3 py-2 cursor-pointer has-[:checked]:border-gold">
+                <span className="flex items-center gap-2">
+                  <input type="radio" name="deliveryMode" value="relay_point" checked={deliveryMode === 'relay_point'} onChange={() => setDeliveryMode('relay_point')} />
+                  Point relais
+                </span>
+                {relayPointDiscount > 0 && <span className="text-gold text-xs">-{relayPointDiscount.toFixed(2)} €</span>}
+              </label>
+            )}
+            {expressDeliveryEnabled && (
+              <label className="flex items-center justify-between text-sm border border-foreground/15 px-3 py-2 cursor-pointer has-[:checked]:border-gold">
+                <span className="flex items-center gap-2">
+                  <input type="radio" name="deliveryMode" value="express" checked={deliveryMode === 'express'} onChange={() => setDeliveryMode('express')} />
+                  Livraison express
+                </span>
+                {expressDeliverySurcharge > 0 && <span className="text-foreground/50 text-xs">+{expressDeliverySurcharge.toFixed(2)} €</span>}
+              </label>
+            )}
+          </div>
+        </div>
 
         {isAuthenticated ? (
           addresses.length > 0 ? (
