@@ -161,8 +161,21 @@ function CategoryPicker({
 export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
   const router = useRouter();
   const [selectionsByCategory, setSelectionsByCategory] = useState<Record<string, Selection[]>>({});
+  const [activeSlugs, setActiveSlugs] = useState<string[]>(slots.map((s) => s.categorySlug));
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const activeSlots = slots.filter((s) => activeSlugs.includes(s.categorySlug));
+  const inactiveSlots = slots.filter((s) => !activeSlugs.includes(s.categorySlug));
+
+  function removeCategory(categorySlug: string) {
+    setActiveSlugs((prev) => prev.filter((slug) => slug !== categorySlug));
+    setSelectionsByCategory((prev) => ({ ...prev, [categorySlug]: [] }));
+  }
+
+  function addCategory(categorySlug: string) {
+    setActiveSlugs((prev) => [...prev, categorySlug]);
+  }
 
   const chosen = Object.values(selectionsByCategory).flat();
   const subtotal = chosen.reduce((sum, s) => sum + s.variant.price, 0);
@@ -214,9 +227,18 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
   return (
     <div className="grid lg:grid-cols-3 gap-12">
       <div className="lg:col-span-2 space-y-10">
-        {slots.map((slot) => (
+        {activeSlots.map((slot) => (
           <div key={slot.categorySlug}>
-            <h2 className="text-sm tracking-widest2 text-foreground/60 mb-4">{slot.categoryName.toUpperCase()}</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm tracking-widest2 text-foreground/60">{slot.categoryName.toUpperCase()}</h2>
+              <button
+                type="button"
+                onClick={() => removeCategory(slot.categorySlug)}
+                className="text-xs text-foreground/40 hover:text-red-400 transition"
+              >
+                Supprimer cette catégorie
+              </button>
+            </div>
             {slot.products.length === 0 ? (
               <p className="text-sm text-foreground/40">Aucun article disponible dans cette catégorie.</p>
             ) : (
@@ -230,6 +252,24 @@ export function OutfitBuilder({ slots }: { slots: CategorySlot[] }) {
             )}
           </div>
         ))}
+
+        {inactiveSlots.length > 0 && (
+          <div>
+            <h2 className="text-sm tracking-widest2 text-foreground/60 mb-4">AJOUTER UNE CATÉGORIE</h2>
+            <div className="flex flex-wrap gap-3">
+              {inactiveSlots.map((slot) => (
+                <button
+                  key={slot.categorySlug}
+                  type="button"
+                  onClick={() => addCategory(slot.categorySlug)}
+                  className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition"
+                >
+                  + {slot.categoryName}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="border border-foreground/10 p-6 h-fit sticky top-24">

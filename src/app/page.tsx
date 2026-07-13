@@ -135,13 +135,9 @@ export default async function HomePage() {
     heritage: (
       <section key="heritage" className="bg-surface2 py-20">
         <div className="mx-auto max-w-4xl px-6 md:px-8 text-center">
-          <h2 className="section-title">L&apos;HÉRITAGE LE SUFFÈTE</h2>
+          <h2 className="section-title">{homepage.heritageTitle}</h2>
           <div className="section-title-underline" />
-          <p className="text-foreground/70 text-[17px] leading-relaxed">
-            Le suffète était le plus haut magistrat de Carthage, garant de l&apos;autorité et de l&apos;élégance du pouvoir.
-            Le Suffète Classic puise dans cet héritage pour concevoir des pièces intemporelles, taillées pour ceux qui
-            savent qu&apos;une allure affirmée ne se démode jamais.
-          </p>
+          <p className="text-foreground/70 text-[17px] leading-relaxed whitespace-pre-line">{homepage.heritageBody}</p>
         </div>
       </section>
     ),
