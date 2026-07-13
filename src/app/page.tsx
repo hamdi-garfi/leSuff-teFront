@@ -3,8 +3,10 @@ import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/catalog';
 import { getHomepageSettings } from '@/lib/homepage';
 import { getHomepageSections } from '@/lib/homepageSections';
+import { getStoreSettings } from '@/lib/storeSettings';
 import { ProductCard } from '@/components/ProductCard';
 import { MountainBackdrop } from '@/components/MountainBackdrop';
+import { TrustBadges } from '@/components/TrustBadges';
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   polos: 'linear-gradient(155deg, #1e2a4a 0%, #0a0a0a 130%)',
@@ -14,10 +16,11 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [categories, homepage, sections, featured, newArrivals] = await Promise.all([
+  const [categories, homepage, sections, storeSettings, featured, newArrivals] = await Promise.all([
     getCategories(),
     getHomepageSettings(),
     getHomepageSections(),
+    getStoreSettings(),
     getProducts({ featured: true, limit: 5 }),
     getProducts({ newArrivals: true, limit: 4 }),
   ]);
@@ -70,6 +73,12 @@ export default async function HomePage() {
       </section>
     ),
 
+    trust_badges: (
+      <section key="trust_badges" className="border-b border-foreground/10 bg-surface2">
+        <TrustBadges freeShippingThreshold={storeSettings.freeShippingThreshold} />
+      </section>
+    ),
+
     collections: (
       <section key="collections" className="mx-auto max-w-7xl px-6 md:px-8 py-20">
         <h2 className="section-title">NOS COLLECTIONS</h2>
@@ -118,11 +127,15 @@ export default async function HomePage() {
       ) : null,
 
     outfit_builder: (
-      <section key="outfit_builder" className="bg-surface2 py-20">
-        <div className="mx-auto max-w-4xl px-6 md:px-8 text-center">
-          <h2 className="section-title">CRÉEZ VOTRE TENUE</h2>
+      <section key="outfit_builder" className="relative overflow-hidden bg-ink py-24">
+        <span className="pointer-events-none absolute top-6 left-6 w-10 h-10 border-t border-l border-gold/40" />
+        <span className="pointer-events-none absolute top-6 right-6 w-10 h-10 border-t border-r border-gold/40" />
+        <span className="pointer-events-none absolute bottom-6 left-6 w-10 h-10 border-b border-l border-gold/40" />
+        <span className="pointer-events-none absolute bottom-6 right-6 w-10 h-10 border-b border-r border-gold/40" />
+        <div className="relative mx-auto max-w-4xl px-6 md:px-8 text-center">
+          <h2 className="section-title !text-white">CRÉEZ VOTRE TENUE</h2>
           <div className="section-title-underline" />
-          <p className="text-foreground/70 text-[17px] leading-relaxed mb-8">
+          <p className="text-white/60 text-[17px] leading-relaxed mb-8">
             Composez une tenue complète parmi nos collections et profitez de -10% sur l&apos;ensemble.
           </p>
           <Link href="/tenue" className="btn-gold">
@@ -133,8 +146,17 @@ export default async function HomePage() {
     ),
 
     heritage: (
-      <section key="heritage" className="bg-surface2 py-20">
-        <div className="mx-auto max-w-4xl px-6 md:px-8 text-center">
+      <section key="heritage" className="relative overflow-hidden bg-surface2 py-24">
+        {homepage.logoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={homepage.logoUrl}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] max-w-none opacity-[0.04]"
+          />
+        )}
+        <div className="relative mx-auto max-w-4xl px-6 md:px-8 text-center">
           <h2 className="section-title">{homepage.heritageTitle}</h2>
           <div className="section-title-underline" />
           <p className="text-foreground/70 text-[17px] leading-relaxed whitespace-pre-line">{homepage.heritageBody}</p>

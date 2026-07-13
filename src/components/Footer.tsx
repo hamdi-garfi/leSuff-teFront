@@ -2,19 +2,14 @@ import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { getHomepageSettings } from '@/lib/homepage';
 import { getStaticPages } from '@/lib/pages';
-import { TruckIcon, ReturnIcon, ShieldIcon, StarBadgeIcon, PaymentBadge, PaymentMethodsInline } from '@/components/PaymentIcons';
-
-const perks = [
-  { title: 'Livraison offerte', desc: "Dès 80€ d'achat", icon: <TruckIcon /> },
-  { title: 'Retours faciles', desc: '30 jours pour changer d’avis', icon: <ReturnIcon /> },
-  { title: 'Paiement sécurisé', desc: <PaymentMethodsInline />, icon: <ShieldIcon /> },
-  { title: 'Qualité premium', desc: 'Sélection des meilleurs matériaux', icon: <StarBadgeIcon /> },
-];
+import { getStoreSettings } from '@/lib/storeSettings';
+import { PaymentBadge } from '@/components/PaymentIcons';
+import { TrustBadges } from '@/components/TrustBadges';
 
 const infoPageOrder = ['a-propos', 'guide-des-tailles', 'livraison-retours', 'cgv', 'confidentialite', 'faq', 'mentions-legales'];
 
 export async function Footer() {
-  const [homepage, staticPages] = await Promise.all([getHomepageSettings(), getStaticPages()]);
+  const [homepage, staticPages, storeSettings] = await Promise.all([getHomepageSettings(), getStaticPages(), getStoreSettings()]);
   const publishedSlugs = new Set(staticPages.map((p) => p.slug));
   const pageLabels = new Map(staticPages.map((p) => [p.slug, p.title]));
   const infoLinks = [
@@ -26,14 +21,8 @@ export async function Footer() {
 
   return (
     <footer className="print:hidden mt-24 border-t border-foreground/10">
-      <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-foreground/10 border-b border-foreground/10">
-        {perks.map((p) => (
-          <div key={p.title} className="flex flex-col items-center text-center gap-2 py-8 px-4">
-            <span className="text-gold">{p.icon}</span>
-            <span className="text-sm font-semibold tracking-wide">{p.title}</span>
-            <span className="text-xs text-foreground/50">{p.desc}</span>
-          </div>
-        ))}
+      <div className="border-b border-foreground/10">
+        <TrustBadges freeShippingThreshold={storeSettings.freeShippingThreshold} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 md:px-8 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -66,9 +55,9 @@ export async function Footer() {
             <input
               type="email"
               placeholder="Votre e-mail"
-              className="flex-1 bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+              className="flex-1 min-w-0 bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
             />
-            <button type="submit" className="bg-gradient-to-br from-gold-light to-gold-dark text-ink px-4 font-semibold">
+            <button type="submit" className="shrink-0 bg-gradient-to-br from-gold-light to-gold-dark text-ink px-4 font-semibold">
               →
             </button>
           </form>
