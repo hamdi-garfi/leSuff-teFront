@@ -16,8 +16,8 @@ export async function Header({ user }: { user: CurrentUser | null }) {
 
   const categoryProductLists = await Promise.all(
     categories.map(async (c) => {
-      const featured = await getProducts({ category: c.slug, featured: true, limit: 4 });
-      const items = featured.items.length > 0 ? featured.items : (await getProducts({ category: c.slug, limit: 4 })).items;
+      const featured = await getProducts({ category: c.slug, featured: true, limit: 5 });
+      const items = featured.items.length > 0 ? featured.items : (await getProducts({ category: c.slug, limit: 5 })).items;
       return [c.id, items] as [number, Product[]];
     }),
   );

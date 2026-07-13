@@ -5,6 +5,8 @@ import Link from 'next/link';
 import type { Category, Product } from '@/lib/types';
 import { NAV_LABELS } from '@/lib/navLabels';
 
+type MenuKey = 'collection' | 'tenue' | number;
+
 export function NavMegaMenu({
   categories,
   categoryProducts,
@@ -12,16 +14,16 @@ export function NavMegaMenu({
   categories: Category[];
   categoryProducts: Record<number, Product[]>;
 }) {
-  const [openId, setOpenId] = useState<number | null>(null);
+  const [openKey, setOpenKey] = useState<MenuKey | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function open(id: number) {
+  function open(key: MenuKey) {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    setOpenId(id);
+    setOpenKey(key);
   }
 
   function scheduleClose() {
-    closeTimer.current = setTimeout(() => setOpenId(null), 150);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 150);
   }
 
   return (
@@ -29,12 +31,63 @@ export function NavMegaMenu({
       <Link href="/" className="hover:text-gold transition whitespace-nowrap">
         Accueil
       </Link>
-      <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
-        Collection
-      </Link>
-      <Link href="/tenue" className="hover:text-gold transition whitespace-nowrap">
-        Créer une tenue
-      </Link>
+
+      <div className="relative" onMouseEnter={() => open('collection')} onMouseLeave={scheduleClose}>
+        <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
+          Collection
+        </Link>
+
+        {openKey === 'collection' && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 z-50" onMouseEnter={() => open('collection')} onMouseLeave={scheduleClose}>
+            <div className="bg-surface border border-foreground/10 shadow-2xl p-8 grid grid-cols-4 gap-6 normal-case tracking-normal w-[600px]">
+              {categories.map((c) => (
+                <Link key={c.id} href={`/collection/${c.slug}`} className="group/item">
+                  <div className="aspect-square bg-surface2 overflow-hidden mb-3">
+                    {c.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="w-full h-full object-cover group-hover/item:scale-105 transition duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-foreground/20 font-serif text-3xl">
+                        {c.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-center group-hover/item:text-gold transition">{NAV_LABELS[c.slug] ?? c.name}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="relative" onMouseEnter={() => open('tenue')} onMouseLeave={scheduleClose}>
+        <Link href="/tenue" className="hover:text-gold transition whitespace-nowrap">
+          Créer une tenue
+        </Link>
+
+        {openKey === 'tenue' && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 z-50" onMouseEnter={() => open('tenue')} onMouseLeave={scheduleClose}>
+            <div className="relative bg-ink border border-foreground/10 shadow-2xl p-10 normal-case tracking-normal w-[380px] text-center overflow-hidden">
+              <span className="pointer-events-none absolute top-4 left-4 w-8 h-8 border-t border-l border-gold/40" />
+              <span className="pointer-events-none absolute top-4 right-4 w-8 h-8 border-t border-r border-gold/40" />
+              <span className="pointer-events-none absolute bottom-4 left-4 w-8 h-8 border-b border-l border-gold/40" />
+              <span className="pointer-events-none absolute bottom-4 right-4 w-8 h-8 border-b border-r border-gold/40" />
+              <p className="font-serif text-xl text-white mb-3">Composez votre tenue</p>
+              <p className="text-xs text-white/60 leading-relaxed mb-6">
+                Choisissez un article par catégorie et profitez de -10% sur l&apos;ensemble dès 2 articles.
+              </p>
+              <Link href="/tenue" className="btn-gold inline-block">
+                COMPOSER MA TENUE →
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
       {categories.map((c) => {
         const products = categoryProducts[c.id] ?? [];
         return (
@@ -43,16 +96,16 @@ export function NavMegaMenu({
               {NAV_LABELS[c.slug] ?? c.name}
             </Link>
 
-            {openId === c.id && products.length > 0 && (
+            {openKey === c.id && products.length > 0 && (
               <div
                 className="absolute left-1/2 -translate-x-1/2 top-full pt-4 z-50"
                 onMouseEnter={() => open(c.id)}
                 onMouseLeave={scheduleClose}
               >
-                <div className="bg-surface border border-foreground/10 shadow-2xl p-6 flex gap-5 normal-case tracking-normal">
+                <div className="bg-surface border border-foreground/10 shadow-2xl p-8 flex gap-6 normal-case tracking-normal">
                   {products.map((p) => (
-                    <Link key={p.id} href={`/produit/${p.slug}`} className="w-32 group/item shrink-0">
-                      <div className="aspect-square bg-surface2 overflow-hidden mb-2">
+                    <Link key={p.id} href={`/produit/${p.slug}`} className="w-40 group/item shrink-0">
+                      <div className="aspect-square bg-surface2 overflow-hidden mb-3">
                         {p.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -72,7 +125,7 @@ export function NavMegaMenu({
                   ))}
                   <Link
                     href={`/collection/${c.slug}`}
-                    className="w-32 shrink-0 flex flex-col items-center justify-center text-center text-xs text-foreground/60 hover:text-gold transition border-l border-foreground/10 pl-5"
+                    className="w-32 shrink-0 flex flex-col items-center justify-center text-center text-xs text-foreground/60 hover:text-gold transition border-l border-foreground/10 pl-6"
                   >
                     Voir tout
                     <br />
