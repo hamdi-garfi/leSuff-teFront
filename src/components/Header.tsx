@@ -31,15 +31,15 @@ export async function Header({ user }: { user: CurrentUser | null }) {
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl px-6 md:px-6 lg:px-10 h-[75px] flex items-center justify-between gap-3 lg:gap-6">
+      <div className="mx-auto max-w-7xl px-6 md:px-10 h-[75px] flex items-center justify-between gap-6">
         <NavMegaMenu categories={categories} categoryProducts={categoryProducts} />
 
         <Link href="/" className="flex items-center gap-3 shrink-0 px-2">
           <Logo size={56} src={homepage.logoUrl} />
-          <Wordmark className="hidden sm:flex md:hidden xl:flex" />
+          <Wordmark className="hidden sm:flex" />
         </Link>
 
-        <div className="flex items-center gap-3 lg:gap-6 flex-1 min-w-0 justify-end">
+        <div className="flex items-center gap-6 flex-1 justify-end">
           <ThemeToggle />
           <SearchOverlay />
           <RecentlyViewedHeaderLink />

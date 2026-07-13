@@ -25,7 +25,7 @@ export function NavMegaMenu({
   }
 
   return (
-    <nav className="hidden md:flex items-center gap-3 lg:gap-6 xl:gap-7 text-[12px] lg:text-[13px] tracking-[0.03em] lg:tracking-[0.06em] uppercase flex-1 min-w-0">
+    <nav className="hidden md:flex items-center gap-7 text-[13px] tracking-[0.06em] uppercase flex-1">
       <Link href="/" className="hover:text-gold transition whitespace-nowrap">
         Accueil
       </Link>
