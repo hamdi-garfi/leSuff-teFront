@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     giftCardCode?: string;
     country?: string;
     addressId?: number;
+    billingAddressId?: number;
     giftWrap?: boolean;
     giftMessage?: string;
     hidePriceOnSlip?: boolean;
@@ -49,6 +50,9 @@ export async function POST(request: NextRequest) {
   }
   if (typeof payload.addressId === 'number') {
     body.addressId = payload.addressId;
+  }
+  if (typeof payload.billingAddressId === 'number') {
+    body.billingAddressId = payload.billingAddressId;
   }
   if (typeof payload.giftWrap === 'boolean') {
     body.giftWrap = payload.giftWrap;

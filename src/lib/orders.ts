@@ -64,6 +64,7 @@ export type AccountOrderDetail = {
   giftWrap: boolean;
   giftMessage: string | null;
   shippingAddress: { street: string; city: string; postalCode: string; country: string; complement: string | null } | null;
+  billingAddress: { street: string; city: string; postalCode: string; country: string; complement: string | null } | null;
   createdAt: string;
   items: AccountOrderItem[];
   returns: AccountReturnRequest[];

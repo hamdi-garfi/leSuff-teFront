@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Address } from '@/lib/types';
 
-const EMPTY_FORM = { street: '', complement: '', postalCode: '', city: '', country: 'France' };
+const EMPTY_FORM = { type: '' as '' | 'shipping' | 'billing', street: '', complement: '', postalCode: '', city: '', country: 'France' };
+
+const TYPE_LABELS: Record<string, string> = {
+  shipping: 'Livraison',
+  billing: 'Facturation',
+};
 
 export function AddressBook({ initialAddresses }: { initialAddresses: Address[] }) {
   const router = useRouter();
@@ -19,6 +24,7 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
     setEditingId(address.id);
     setIsAdding(false);
     setForm({
+      type: address.type ?? '',
       street: address.street,
       complement: address.complement ?? '',
       postalCode: address.postalCode,
@@ -49,7 +55,7 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
     const res = await fetch(isEditing ? `/api/account/addresses/${editingId}` : '/api/account/addresses', {
       method: isEditing ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, type: form.type || null }),
     });
     const data = await res.json();
 
@@ -83,6 +89,11 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           {addresses.map((address) => (
             <div key={address.id} className="border border-foreground/10 p-5">
+              {address.type && (
+                <span className="text-xs text-gold border border-gold/40 px-1.5 py-0.5 mb-2 inline-block">
+                  {TYPE_LABELS[address.type]}
+                </span>
+              )}
               <p className="text-sm">{address.street}</p>
               {address.complement && <p className="text-sm text-foreground/60">{address.complement}</p>}
               <p className="text-sm text-foreground/60">
@@ -104,6 +115,23 @@ export function AddressBook({ initialAddresses }: { initialAddresses: Address[] 
 
       {showForm ? (
         <form onSubmit={handleSubmit} className="border border-foreground/10 p-6 space-y-4 max-w-lg">
+          <div>
+            <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">TYPE (OPTIONNEL)</label>
+            <div className="flex gap-4 text-sm">
+              {(['', 'shipping', 'billing'] as const).map((t) => (
+                <label key={t || 'none'} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="addressType"
+                    checked={form.type === t}
+                    onChange={() => setForm({ ...form, type: t })}
+                    className="w-auto"
+                  />
+                  {t === '' ? 'Aucun' : TYPE_LABELS[t]}
+                </label>
+              ))}
+            </div>
+          </div>
           <div>
             <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE</label>
             <input

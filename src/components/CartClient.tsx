@@ -33,7 +33,13 @@ export function CartClient({
   const [showGiftCard, setShowGiftCard] = useState(false);
   const [country, setCountry] = useState('France');
   const [showCountryPicker, setShowCountryPicker] = useState(false);
-  const [addressId, setAddressId] = useState<number | null>(addresses[0]?.id ?? null);
+  const [addressId, setAddressId] = useState<number | null>(
+    addresses.find((a) => a.type === 'shipping')?.id ?? addresses[0]?.id ?? null,
+  );
+  const [useSameBillingAddress, setUseSameBillingAddress] = useState(!addresses.some((a) => a.type === 'billing'));
+  const [billingAddressId, setBillingAddressId] = useState<number | null>(
+    addresses.find((a) => a.type === 'billing')?.id ?? addresses[0]?.id ?? null,
+  );
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState('');
   const [hidePriceOnSlip, setHidePriceOnSlip] = useState(false);
@@ -108,7 +114,10 @@ export function CartClient({
         ...(giftCardCode ? { giftCardCode } : {}),
         ...(giftWrap ? { giftWrap: true, giftMessage, hidePriceOnSlip } : {}),
         ...(isAuthenticated
-          ? { ...(addressId ? { addressId } : {}) }
+          ? {
+              ...(addressId ? { addressId } : {}),
+              ...(!useSameBillingAddress && billingAddressId ? { billingAddressId } : {}),
+            }
           : {
               email: guestEmail,
               firstName: guestFirstName,
@@ -285,6 +294,32 @@ export function CartClient({
                   </option>
                 ))}
               </select>
+
+              <label className="flex items-center gap-2 text-xs mt-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useSameBillingAddress}
+                  onChange={(e) => setUseSameBillingAddress(e.target.checked)}
+                  className="w-auto"
+                />
+                Adresse de facturation identique à la livraison
+              </label>
+              {!useSameBillingAddress && (
+                <div className="mt-2">
+                  <label className="text-xs tracking-widest2 text-foreground/60 block mb-2">ADRESSE DE FACTURATION</label>
+                  <select
+                    value={billingAddressId ?? ''}
+                    onChange={(e) => setBillingAddressId(e.target.value ? Number(e.target.value) : null)}
+                    className="w-full bg-surface2 border border-foreground/20 px-3 py-2 text-sm outline-none focus:border-gold"
+                  >
+                    {addresses.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.street}, {a.postalCode} {a.city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-xs text-foreground/50 mb-4">

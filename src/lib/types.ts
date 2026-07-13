@@ -64,6 +64,7 @@ export type Cart = {
 
 export type Address = {
   id: number;
+  type: 'shipping' | 'billing' | null;
   street: string;
   city: string;
   postalCode: string;

@@ -81,6 +81,22 @@ export default async function OrderDetailPage({ params }: { params: { id: string
             )}
           </div>
         )}
+
+        {(order.billingAddress || order.shippingAddress) && (
+          <div>
+            <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">ADRESSE DE FACTURATION</h2>
+            <p className="text-sm text-foreground/80">
+              {(order.billingAddress ?? order.shippingAddress)!.street}
+              {(order.billingAddress ?? order.shippingAddress)!.complement && (
+                <>, {(order.billingAddress ?? order.shippingAddress)!.complement}</>
+              )}
+              <br />
+              {(order.billingAddress ?? order.shippingAddress)!.postalCode} {(order.billingAddress ?? order.shippingAddress)!.city}
+              <br />
+              {(order.billingAddress ?? order.shippingAddress)!.country}
+            </p>
+          </div>
+        )}
       </div>
 
       <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">ARTICLES</h2>
