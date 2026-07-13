@@ -1,11 +1,31 @@
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL ?? 'http://app:8000';
 
+function normalizeErrorBody(status: number, body: unknown): { error: string; [key: string]: unknown } {
+  if (typeof body === 'object' && body !== null) {
+    const obj = body as Record<string, unknown>;
+    if (typeof obj.error === 'string') {
+      return obj as { error: string };
+    }
+    // Lexik JWT (and some other Symfony error responses) use "message" instead of
+    // "error" — without this, expired/invalid tokens surfaced as a generic fallback
+    // string everywhere instead of a message a user could actually act on.
+    if (typeof obj.message === 'string') {
+      return { ...obj, error: obj.message };
+    }
+  }
+  return { error: status === 401 ? 'session expirée, veuillez vous reconnecter' : 'unexpected error' };
+}
+
 export class BackendError extends Error {
+  public body: { error: string; [key: string]: unknown };
+
   constructor(
     public status: number,
-    public body: unknown,
+    rawBody: unknown,
   ) {
-    super(typeof body === 'object' && body && 'error' in body ? String((body as { error: unknown }).error) : 'backend error');
+    const body = normalizeErrorBody(status, rawBody);
+    super(body.error);
+    this.body = body;
   }
 }
 
