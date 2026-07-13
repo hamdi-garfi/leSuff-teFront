@@ -7,6 +7,7 @@ import { getCart, getCurrentUser } from '@/lib/session';
 import { WishlistProvider } from '@/lib/WishlistContext';
 import { CartProvider } from '@/lib/CartContext';
 import { CartDrawer } from '@/components/CartDrawer';
+import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <main>{children}</main>
             <Footer />
             <CartDrawer />
+            <CookieConsentBanner />
           </CartProvider>
         </WishlistProvider>
       </body>
