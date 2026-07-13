@@ -5,7 +5,7 @@ import { CartClient } from '@/components/CartClient';
 
 export const metadata = { title: 'Mon panier — Le Suffète Classic' };
 
-export default async function CartPage() {
+export default async function CartPage({ searchParams }: { searchParams: { promo?: string } }) {
   const [cart, shippingZones, addresses, user] = await Promise.all([
     getCart(),
     getShippingZones(),
@@ -17,7 +17,13 @@ export default async function CartPage() {
     <div className="mx-auto max-w-6xl px-6 md:px-8 py-16">
       <h1 className="section-title">MON PANIER</h1>
       <div className="section-title-underline" />
-      <CartClient initialCart={cart} shippingZones={shippingZones} addresses={addresses} isAuthenticated={!!user} />
+      <CartClient
+        initialCart={cart}
+        shippingZones={shippingZones}
+        addresses={addresses}
+        isAuthenticated={!!user}
+        initialCouponCode={searchParams.promo}
+      />
     </div>
   );
 }

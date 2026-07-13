@@ -14,11 +14,13 @@ export function CartClient({
   shippingZones,
   addresses,
   isAuthenticated,
+  initialCouponCode,
 }: {
   initialCart: Cart | null;
   shippingZones: ShippingZone[];
   addresses: Address[];
   isAuthenticated: boolean;
+  initialCouponCode?: string;
 }) {
   const router = useRouter();
   const { refresh: refreshCartContext } = useCart();
@@ -26,7 +28,7 @@ export function CartClient({
   const [isPending, startTransition] = useTransition();
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
+  const [couponCode, setCouponCode] = useState(initialCouponCode ?? '');
   const [giftCardCode, setGiftCardCode] = useState('');
   const [showGiftCard, setShowGiftCard] = useState(false);
   const [country, setCountry] = useState('France');

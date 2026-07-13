@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCategories, getProducts } from '@/lib/catalog';
 import { getHomepageSettings } from '@/lib/homepage';
+import { getHomepageSections } from '@/lib/homepageSections';
 import { ProductCard } from '@/components/ProductCard';
 import { MountainBackdrop } from '@/components/MountainBackdrop';
 
@@ -13,18 +14,19 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [categories, homepage, featured, newArrivals] = await Promise.all([
+  const [categories, homepage, sections, featured, newArrivals] = await Promise.all([
     getCategories(),
     getHomepageSettings(),
+    getHomepageSections(),
     getProducts({ featured: true, limit: 5 }),
     getProducts({ newArrivals: true, limit: 4 }),
   ]);
   const bestSellers = featured.items.length > 0 ? featured.items : (await getProducts({ limit: 5 })).items;
   const latest = newArrivals.items.length > 0 ? newArrivals.items : (await getProducts({ limit: 4 })).items;
 
-  return (
-    <div>
-      <section className="relative overflow-hidden border-b border-foreground/10">
+  const sectionsByType: Record<string, React.ReactNode> = {
+    hero: (
+      <section key="hero" className="relative overflow-hidden border-b border-foreground/10">
         {homepage.heroVideoUrl ? (
           <>
             <video
@@ -66,8 +68,10 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+    ),
 
-      <section className="mx-auto max-w-7xl px-6 md:px-8 py-20">
+    collections: (
+      <section key="collections" className="mx-auto max-w-7xl px-6 md:px-8 py-20">
         <h2 className="section-title">NOS COLLECTIONS</h2>
         <div className="section-title-underline" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -98,9 +102,11 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+    ),
 
-      {latest.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 md:px-8 pb-24">
+    new_arrivals:
+      latest.length > 0 ? (
+        <section key="new_arrivals" className="mx-auto max-w-7xl px-6 md:px-8 pb-24">
           <h2 className="section-title">NOUVEAUTÉS</h2>
           <div className="section-title-underline" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -109,9 +115,25 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-      )}
+      ) : null,
 
-      <section className="bg-surface2 py-20">
+    outfit_builder: (
+      <section key="outfit_builder" className="bg-surface2 py-20">
+        <div className="mx-auto max-w-4xl px-6 md:px-8 text-center">
+          <h2 className="section-title">CRÉEZ VOTRE TENUE</h2>
+          <div className="section-title-underline" />
+          <p className="text-foreground/70 text-[17px] leading-relaxed mb-8">
+            Composez une tenue complète parmi nos collections et profitez de -10% sur l&apos;ensemble.
+          </p>
+          <Link href="/tenue" className="btn-gold">
+            COMPOSER MA TENUE →
+          </Link>
+        </div>
+      </section>
+    ),
+
+    heritage: (
+      <section key="heritage" className="bg-surface2 py-20">
         <div className="mx-auto max-w-4xl px-6 md:px-8 text-center">
           <h2 className="section-title">L&apos;HÉRITAGE LE SUFFÈTE</h2>
           <div className="section-title-underline" />
@@ -122,8 +144,10 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+    ),
 
-      <section className="mx-auto max-w-7xl px-6 md:px-8 py-24">
+    best_sellers: (
+      <section key="best_sellers" className="mx-auto max-w-7xl px-6 md:px-8 py-24">
         <h2 className="section-title">BEST-SELLERS</h2>
         <div className="section-title-underline" />
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
@@ -132,6 +156,14 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+    ),
+  };
+
+  return (
+    <div>
+      {sections
+        .filter((s) => s.enabled)
+        .map((s) => sectionsByType[s.type] ?? null)}
     </div>
   );
 }

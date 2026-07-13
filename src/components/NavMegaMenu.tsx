@@ -32,6 +32,9 @@ export function NavMegaMenu({
       <Link href="/collection" className="hover:text-gold transition whitespace-nowrap">
         Collection
       </Link>
+      <Link href="/tenue" className="hover:text-gold transition whitespace-nowrap">
+        Créer une tenue
+      </Link>
       {categories.map((c) => {
         const products = categoryProducts[c.id] ?? [];
         return (
