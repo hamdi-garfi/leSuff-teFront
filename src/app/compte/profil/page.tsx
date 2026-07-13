@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { getCurrentUser } from '@/lib/session';
 import { ProfileForm } from '@/components/ProfileForm';
 import { PasswordChangeForm } from '@/components/PasswordChangeForm';
+import { AccountTabs } from '@/components/AccountTabs';
 
 export const metadata = { title: 'Mon profil — Le Suffète Classic' };
 
@@ -14,14 +14,10 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 md:px-8 py-16">
-      <p className="text-xs text-foreground/40 mb-8">
-        <Link href="/compte" className="hover:text-gold">
-          Mon compte
-        </Link>{' '}
-        / <span className="text-foreground/70">Mon profil</span>
-      </p>
-      <h1 className="section-title">MON PROFIL</h1>
+      <h1 className="section-title">MON COMPTE</h1>
       <div className="section-title-underline" />
+      <AccountTabs />
+      <h2 className="text-xs tracking-widest2 text-foreground/60 mb-6">MON PROFIL</h2>
       <div className="space-y-8">
         <ProfileForm user={user} />
         <PasswordChangeForm />

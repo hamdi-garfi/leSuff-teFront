@@ -5,9 +5,16 @@ export type AccountOrder = {
   id: number;
   number: string;
   status: string;
+  fulfillmentStatus: string;
+  deliveryMode: string;
+  paymentMethod: string | null;
   total: number;
+  discountAmount: number | null;
+  itemCount: number;
+  shippingCity: string | null;
+  shippingCountry: string | null;
   createdAt: string;
-  items: { productName: string; size: string; color: string; quantity: number; unitPrice: number }[];
+  items: { productName: string; productSlug: string; imageUrl: string | null; size: string; color: string; quantity: number; unitPrice: number }[];
 };
 
 export async function getMyOrders(): Promise<AccountOrder[]> {
@@ -54,12 +61,19 @@ export type AccountReturnRequest = {
 export type AccountOrderDetail = {
   id: number;
   number: string;
+  invoiceNumber: string | null;
+  invoiceIssuedAt: string | null;
   status: string;
   fulfillmentStatus: string;
+  deliveryMode: string;
   total: number;
+  totalExcludingVat: number;
+  totalVatAmount: number;
   discountAmount: number | null;
   shippingCost: number | null;
+  paymentMethod: string | null;
   trackingNumber: string | null;
+  trackingUrl: string | null;
   carrier: string | null;
   giftWrap: boolean;
   giftMessage: string | null;

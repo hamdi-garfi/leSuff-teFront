@@ -2,17 +2,15 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/session';
 import { getMyOrders } from '@/lib/orders';
+import { getLoyalty } from '@/lib/loyalty';
+import { getWishlist } from '@/lib/wishlist';
 import { LogoutButton } from '@/components/LogoutButton';
+import { AccountTabs } from '@/components/AccountTabs';
+import { TrustBadges } from '@/components/TrustBadges';
+import { getStoreSettings } from '@/lib/storeSettings';
+import { getDisplayStatus, getPrimaryAction } from '@/lib/orderStatus';
 
 export const metadata = { title: 'Mon compte — Le Suffète Classic' };
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'En attente de paiement',
-  paid: 'Payée',
-  shipped: 'Expédiée',
-  completed: 'Livrée',
-  cancelled: 'Annulée',
-};
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
@@ -20,67 +18,103 @@ export default async function AccountPage() {
     redirect('/compte/connexion?next=compte');
   }
 
-  const orders = await getMyOrders();
+  const [orders, loyalty, wishlist, storeSettings] = await Promise.all([
+    getMyOrders(),
+    getLoyalty(),
+    getWishlist(),
+    getStoreSettings(),
+  ]);
+
+  const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+  const recentOrders = orders.slice(0, 3);
+
+  const stats = [
+    { label: 'Commandes', value: orders.length },
+    { label: 'Total dépensé', value: `${totalSpent.toFixed(2)} €` },
+    { label: 'Points fidélité', value: loyalty?.pointsBalance ?? 0 },
+    { label: 'Liste de souhaits', value: wishlist.length },
+  ];
 
   return (
     <div className="mx-auto max-w-4xl px-6 md:px-8 py-16">
       <h1 className="section-title">MON COMPTE</h1>
       <div className="section-title-underline" />
 
-      <div className="flex items-center justify-between border border-foreground/10 p-6 mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border border-foreground/10 p-6 mb-6">
         <div>
           <p className="text-sm">
             {user.firstName} {user.lastName}
           </p>
           <p className="text-sm text-foreground/50">{user.email}</p>
         </div>
-        <LogoutButton />
-      </div>
-
-      <div className="flex flex-wrap gap-3 mb-12">
-        <Link href="/compte/portefeuille" className="text-xs tracking-widest2 uppercase border border-gold text-gold px-4 py-2.5 hover:bg-gold hover:text-background transition">
-          Mon portefeuille
-        </Link>
-        <Link href="/compte/profil" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
-          Mon profil
-        </Link>
-        <Link href="/compte/adresses" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
-          Mes adresses
-        </Link>
-        <Link href="/liste-de-souhaits" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
-          Liste de souhaits
-        </Link>
-        <Link href="/vu-recemment" className="text-xs tracking-widest2 uppercase border border-foreground/20 px-4 py-2.5 hover:border-gold transition">
-          Vu récemment
-        </Link>
-      </div>
-
-      <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">MES COMMANDES</h2>
-      {orders.length === 0 ? (
-        <p className="text-foreground/50 text-sm">Vous n&apos;avez pas encore passé de commande.</p>
-      ) : (
-        <div className="divide-y divide-foreground/10">
-          {orders.map((order) => (
-            <Link key={order.id} href={`/compte/commandes/${order.id}`} className="block py-5 hover:bg-surface2 transition -mx-4 px-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm">{order.number}</span>
-                <span className="text-xs text-gold">{STATUS_LABELS[order.status] ?? order.status}</span>
-              </div>
-              <p className="text-xs text-foreground/40 mb-2">
-                {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </p>
-              <ul className="text-xs text-foreground/50 space-y-1">
-                {order.items.map((item, idx) => (
-                  <li key={idx}>
-                    {item.quantity}× {item.productName} ({item.size}, {item.color})
-                  </li>
-                ))}
-              </ul>
-              <p className="text-sm mt-2">{order.total.toFixed(2)} €</p>
-            </Link>
-          ))}
+        <div className="flex flex-wrap gap-3">
+          <Link href="/compte/profil" className="btn-outline">
+            MODIFIER MES INFORMATIONS
+          </Link>
+          <LogoutButton />
         </div>
-      )}
+      </div>
+
+      <AccountTabs />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        {stats.map((s) => (
+          <div key={s.label} className="border border-foreground/10 p-5 text-center">
+            <p className="text-2xl font-serif text-gold">{s.value}</p>
+            <p className="text-xs text-foreground/50 mt-1 tracking-wide">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-10">
+        <div className="md:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs tracking-widest2 text-foreground/60">DERNIÈRES COMMANDES</h2>
+            {orders.length > 0 && (
+              <Link href="/compte/commandes" className="text-xs text-gold hover:underline">
+                Voir tout
+              </Link>
+            )}
+          </div>
+          {recentOrders.length === 0 ? (
+            <div className="text-center py-16 border border-foreground/10">
+              <p className="text-foreground/50 text-sm mb-6">Vous n&apos;avez pas encore passé de commande.</p>
+              <Link href="/collection" className="btn-gold">
+                DÉCOUVRIR NOS COLLECTIONS
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-foreground/10">
+              {recentOrders.map((order) => {
+                const display = getDisplayStatus(order);
+                const action = getPrimaryAction(order);
+                return (
+                  <div key={order.id} className="flex items-center justify-between py-5">
+                    <div>
+                      <p className="text-sm">{order.number}</p>
+                      <p className="text-xs text-foreground/40 mt-0.5">
+                        {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })} ·{' '}
+                        {order.total.toFixed(2)} € · <span className="text-gold">{display.label}</span>
+                      </p>
+                    </div>
+                    <Link
+                      href={`/compte/commandes/${order.id}${action?.href.startsWith('#') ? action.href : ''}`}
+                      className="text-xs tracking-widest2 uppercase text-foreground/50 hover:text-gold transition shrink-0"
+                    >
+                      {action?.label ?? 'VOIR'}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="border border-foreground/10 p-6 h-fit">
+          <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">VOS AVANTAGES</h2>
+          <TrustBadges freeShippingThreshold={storeSettings.freeShippingThreshold} layout="list" />
+        </div>
+      </div>
     </div>
   );
 }

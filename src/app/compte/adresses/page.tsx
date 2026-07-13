@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { getCurrentUser } from '@/lib/session';
 import { getMyAddresses } from '@/lib/addresses';
 import { AddressBook } from '@/components/AddressBook';
+import { AccountTabs } from '@/components/AccountTabs';
 
 export const metadata = { title: 'Mes adresses — Le Suffète Classic' };
 
@@ -16,14 +16,10 @@ export default async function AddressesPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 md:px-8 py-16">
-      <p className="text-xs text-foreground/40 mb-8">
-        <Link href="/compte" className="hover:text-gold">
-          Mon compte
-        </Link>{' '}
-        / <span className="text-foreground/70">Mes adresses</span>
-      </p>
-      <h1 className="section-title">MES ADRESSES</h1>
+      <h1 className="section-title">MON COMPTE</h1>
       <div className="section-title-underline" />
+      <AccountTabs />
+      <h2 className="text-xs tracking-widest2 text-foreground/60 mb-6">MES ADRESSES</h2>
       <AddressBook initialAddresses={addresses} />
     </div>
   );

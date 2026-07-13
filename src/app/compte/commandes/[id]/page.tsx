@@ -7,6 +7,7 @@ import { ReorderButton } from '@/components/ReorderButton';
 import { ReturnRequestForm } from '@/components/ReturnRequestForm';
 import { PrintButton } from '@/components/PrintButton';
 import { RETURN_REASON_LABELS, RETURN_STATUS_LABELS } from '@/lib/returnReasons';
+import { DELIVERY_MODE_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/orderStatus';
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'En attente de paiement',
@@ -53,14 +54,26 @@ export default async function OrderDetailPage({ params }: { params: { id: string
       </div>
 
       <div className="grid md:grid-cols-2 gap-10 mb-12">
-        <div>
+        <div id="tracking" className="scroll-mt-24">
           <h2 className="text-xs tracking-widest2 text-foreground/60 mb-4">SUIVI DE LIVRAISON</h2>
           <OrderTimeline status={order.status} fulfillmentStatus={order.fulfillmentStatus} />
+          <p className="text-xs text-foreground/50 mt-4">{DELIVERY_MODE_LABELS[order.deliveryMode] ?? order.deliveryMode}</p>
           {order.trackingNumber && (
-            <p className="text-xs text-foreground/50 mt-4">
-              {order.carrier ?? 'Transporteur'} — n° {order.trackingNumber}
+            <p className="text-xs text-foreground/50 mt-1">
+              {order.carrier ?? 'Transporteur'} — n°{' '}
+              {order.trackingUrl ? (
+                <a href={order.trackingUrl} target="_blank" rel="noopener" className="text-gold hover:underline">
+                  {order.trackingNumber}
+                </a>
+              ) : (
+                order.trackingNumber
+              )}
             </p>
           )}
+          {order.paymentMethod && (
+            <p className="text-xs text-foreground/50 mt-1">Paiement : {PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod}</p>
+          )}
+          {order.invoiceNumber && <p className="text-xs text-foreground/50 mt-1">Facture : {order.invoiceNumber}</p>}
         </div>
 
         {order.shippingAddress && (
@@ -159,7 +172,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
         </div>
       )}
 
-      <div className="flex flex-wrap items-start gap-4 print:hidden">
+      <div id="return" className="flex flex-wrap items-start gap-4 print:hidden scroll-mt-24">
         <ReorderButton items={order.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }))} />
         <ReturnRequestForm orderId={order.id} items={order.items} />
         <Link href="/contact" className="border border-foreground/30 px-5 py-3 text-xs tracking-widest2 uppercase hover:border-gold transition">
