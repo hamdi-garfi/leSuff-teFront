@@ -19,6 +19,7 @@ export function ProductCard({ product }: { product: Product }) {
     [colors, product.variants],
   );
   const defaultColor = colorWithPhoto ?? colors[0] ?? '';
+  const colorHexFor = (color: string) => product.variants.find((v) => v.color === color)?.colorHex ?? null;
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [previewColor, setPreviewColor] = useState(defaultColor);
   const [addingId, setAddingId] = useState<number | null>(null);
@@ -72,7 +73,7 @@ export function ProductCard({ product }: { product: Product }) {
         <Link href={hrefFor(previewColor)} className="block">
           <div
             className="aspect-[3/4] w-full flex items-center justify-center relative overflow-hidden"
-            style={mainImage ? undefined : { background: `linear-gradient(155deg, ${colorToHex(previewColor)} 0%, #0a0a0a 120%)` }}
+            style={mainImage ? undefined : { background: `linear-gradient(155deg, ${colorToHex(previewColor, colorHexFor(previewColor))} 0%, #0a0a0a 120%)` }}
           >
             {mainImage ? (
               <>
@@ -171,14 +172,14 @@ export function ProductCard({ product }: { product: Product }) {
                 className={`w-3.5 h-3.5 rounded-full border transition ${
                   color === previewColor ? 'border-gold scale-110' : 'border-foreground/30 hover:border-foreground/60'
                 }`}
-                style={{ backgroundColor: colorToHex(color) }}
+                style={{ backgroundColor: colorToHex(color, colorHexFor(color)) }}
               />
             ))}
           </div>
         ) : (
           <span
             className="inline-block w-3 h-3 rounded-full border border-foreground/30 mt-2"
-            style={{ backgroundColor: colorToHex(defaultColor) }}
+            style={{ backgroundColor: colorToHex(defaultColor, colorHexFor(defaultColor)) }}
             title={defaultColor}
           />
         )}

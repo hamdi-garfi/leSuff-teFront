@@ -123,7 +123,7 @@ function FrameTile({ selection, onChange, onRemove }: { selection: Selection; on
                     if (next) onChange(next);
                   }}
                   className={`w-5 h-5 rounded-full border-2 ${variant.color === c ? 'border-gold' : 'border-foreground/20'}`}
-                  style={{ backgroundColor: colorToHex(c) }}
+                  style={{ backgroundColor: colorToHex(c, product.variants.find((v) => v.color === c)?.colorHex) }}
                   aria-label={c}
                 />
               ))}

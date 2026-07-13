@@ -12,6 +12,7 @@ export type ProductVariant = {
   id: number;
   size: string;
   color: string;
+  colorHex: string | null;
   sku: string;
   stock: number;
   price: number;
@@ -51,9 +52,9 @@ export type CartItem = {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
-  variant: { id: number; sku: string; size: string; color: string; stock: number };
+  variant: { id: number; sku: string; size: string; color: string; colorHex: string | null; stock: number };
   product: { id: number; name: string; slug: string };
-  availableVariants: { id: number; size: string; color: string; stock: number }[];
+  availableVariants: { id: number; size: string; color: string; colorHex: string | null; stock: number }[];
 };
 
 export type Cart = {

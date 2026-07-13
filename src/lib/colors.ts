@@ -11,6 +11,9 @@ const COLOR_MAP: Record<string, string> = {
   Anthracite: '#2b2f36',
 };
 
-export function colorToHex(color: string): string {
+export function colorToHex(color: string, hex?: string | null): string {
+  if (hex && /^#[0-9a-f]{6}$/i.test(hex)) {
+    return hex;
+  }
   return COLOR_MAP[color] ?? '#6b7280';
 }

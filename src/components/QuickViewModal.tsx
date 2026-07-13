@@ -16,6 +16,13 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
     [colors, product.variants],
   );
   const [selectedColor, setSelectedColor] = useState(colorWithPhoto ?? colors[0] ?? '');
+  const colorHexMap = useMemo(() => {
+    const map: Record<string, string | null> = {};
+    for (const v of product.variants) {
+      if (!(v.color in map) || v.colorHex) map[v.color] = v.colorHex;
+    }
+    return map;
+  }, [product.variants]);
 
   const image = useMemo(() => {
     const variantWithImage = product.variants.find((v) => v.color === selectedColor && v.imageUrl);
@@ -59,7 +66,7 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
 
         <div
           className="aspect-square flex items-center justify-center overflow-hidden"
-          style={image ? undefined : { background: `linear-gradient(155deg, ${colorToHex(selectedColor)} 0%, #0a0a0a 130%)` }}
+          style={image ? undefined : { background: `linear-gradient(155deg, ${colorToHex(selectedColor, colorHexMap[selectedColor])} 0%, #0a0a0a 130%)` }}
         >
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -84,7 +91,7 @@ export function QuickViewModal({ product, onClose }: { product: Product; onClose
           </p>
           {product.description && <p className="text-foreground/60 text-sm mb-4 leading-relaxed line-clamp-3">{product.description}</p>}
 
-          {colors.length > 1 && <ColorSwatches colors={colors} selected={selectedColor} onSelect={setSelectedColor} />}
+          {colors.length > 1 && <ColorSwatches colors={colors} selected={selectedColor} onSelect={setSelectedColor} colorHexMap={colorHexMap} />}
 
           <div className="mt-6">
             <AddToCartForm variants={variantsForColor} basePrice={product.basePrice} />

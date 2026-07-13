@@ -4,10 +4,12 @@ export function ColorSwatches({
   colors,
   selected,
   onSelect,
+  colorHexMap,
 }: {
   colors: string[];
   selected: string;
   onSelect: (color: string) => void;
+  colorHexMap?: Record<string, string | null>;
 }) {
   return (
     <div className="flex items-center gap-3 mt-4">
@@ -22,7 +24,7 @@ export function ColorSwatches({
           className={`w-8 h-8 rounded-full transition ${
             color === selected ? 'ring-2 ring-gold ring-offset-2 ring-offset-surface' : 'hover:ring-2 hover:ring-foreground/30 hover:ring-offset-2 hover:ring-offset-surface'
           }`}
-          style={{ backgroundColor: colorToHex(color) }}
+          style={{ backgroundColor: colorToHex(color, colorHexMap?.[color]) }}
         />
       ))}
     </div>

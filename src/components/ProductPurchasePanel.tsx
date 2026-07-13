@@ -22,6 +22,13 @@ export function ProductPurchasePanel({
   initialColor?: string;
 }) {
   const colors = useMemo(() => Array.from(new Set(product.variants.map((v) => v.color))), [product.variants]);
+  const colorHexMap = useMemo(() => {
+    const map: Record<string, string | null> = {};
+    for (const v of product.variants) {
+      if (!(v.color in map) || v.colorHex) map[v.color] = v.colorHex;
+    }
+    return map;
+  }, [product.variants]);
   // Prefer opening on a color that actually has a photo, so the gallery isn't blank by default.
   const colorWithPhoto = useMemo(
     () => colors.find((c) => product.variants.some((v) => v.color === c && v.imageUrl)),
@@ -56,7 +63,7 @@ export function ProductPurchasePanel({
           key={selectedColor}
           name={product.name}
           images={images}
-          fallbackGradient={`linear-gradient(155deg, ${colorToHex(selectedColor)} 0%, #0a0a0a 130%)`}
+          fallbackGradient={`linear-gradient(155deg, ${colorToHex(selectedColor, colorHexMap[selectedColor])} 0%, #0a0a0a 130%)`}
           badge={
             onSale && (
               <span className="absolute top-4 left-4 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-xs font-bold px-3 py-1.5 tracking-wide">
@@ -65,7 +72,7 @@ export function ProductPurchasePanel({
             )
           }
         />
-        {colors.length > 1 && <ColorSwatches colors={colors} selected={selectedColor} onSelect={setSelectedColor} />}
+        {colors.length > 1 && <ColorSwatches colors={colors} selected={selectedColor} onSelect={setSelectedColor} colorHexMap={colorHexMap} />}
       </div>
 
       <div>

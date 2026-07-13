@@ -108,7 +108,7 @@ export function CartDrawer() {
                 <div key={item.id} className="flex gap-3 py-5">
                   <div
                     className="w-14 h-16 shrink-0 flex items-center justify-center"
-                    style={{ background: `linear-gradient(155deg, ${colorToHex(item.variant.color)} 0%, #0a0a0a 130%)` }}
+                    style={{ background: `linear-gradient(155deg, ${colorToHex(item.variant.color, item.variant.colorHex)} 0%, #0a0a0a 130%)` }}
                   >
                     <span className="font-serif text-lg text-foreground/20">{item.product.name.charAt(0)}</span>
                   </div>
