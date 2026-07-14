@@ -83,6 +83,17 @@ export function ProductPurchasePanel({
             className="w-9 h-9 flex items-center justify-center text-foreground/50 hover:text-gold transition shrink-0"
           />
         </div>
+        {product.isLimitedEdition && (
+          <div className="flex items-center gap-2 mb-3">
+            {product.limitedEditionLogoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={product.limitedEditionLogoUrl} alt="" className="h-6 w-auto object-contain" />
+            )}
+            <span className="inline-block bg-gradient-to-br from-gold-light to-gold-dark text-ink text-[10px] font-bold px-2.5 py-1 tracking-wide">
+              {product.limitedEditionLabel || 'ÉDITION LIMITÉE'}
+            </span>
+          </div>
+        )}
         <h1 className="font-serif text-3xl md:text-4xl mb-3">{product.name}</h1>
         {reviews.average !== null && (
           <div className="flex items-center gap-2 mb-3">

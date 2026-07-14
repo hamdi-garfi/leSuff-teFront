@@ -43,6 +43,9 @@ export type Product = {
   shippingNote: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  isLimitedEdition: boolean;
+  limitedEditionLabel: string | null;
+  limitedEditionLogoUrl: string | null;
   category: { id: number; name: string; slug: string };
   variants: ProductVariant[];
 };

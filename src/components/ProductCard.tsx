@@ -98,16 +98,19 @@ export function ProductCard({ product }: { product: Product }) {
                 {product.name.charAt(0)}
               </span>
             )}
-            {onSale && (
+            {product.isLimitedEdition ? (
+              <span className="absolute top-3 left-3 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
+                {product.limitedEditionLabel || 'ÉDITION LIMITÉE'}
+              </span>
+            ) : onSale ? (
               <span className="absolute top-3 left-3 bg-gradient-to-br from-gold-light to-gold-dark text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
                 -{discountPct}%
               </span>
-            )}
-            {!onSale && totalStock <= 5 && totalStock > 0 && (
+            ) : totalStock <= 5 && totalStock > 0 ? (
               <span className="absolute top-3 left-3 bg-white text-ink text-[10px] font-bold px-2 py-1 tracking-wide">
                 PRESQUE ÉPUISÉ
               </span>
-            )}
+            ) : null}
             {totalStock === 0 && (
               <span className="absolute top-3 left-3 bg-black/80 text-white text-[10px] font-bold px-2 py-1 tracking-wide">
                 RUPTURE
