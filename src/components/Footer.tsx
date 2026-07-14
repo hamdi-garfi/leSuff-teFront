@@ -69,6 +69,7 @@ export async function Footer() {
         <div className="flex flex-wrap justify-center gap-2">
           <PaymentBadge method="visa" />
           <PaymentBadge method="mastercard" />
+          <PaymentBadge method="cb" />
           <PaymentBadge method="paypal" />
           <PaymentBadge method="apple-pay" />
         </div>
