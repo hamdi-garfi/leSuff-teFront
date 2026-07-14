@@ -7,15 +7,7 @@ import { ReorderButton } from '@/components/ReorderButton';
 import { ReturnRequestForm } from '@/components/ReturnRequestForm';
 import { PrintButton } from '@/components/PrintButton';
 import { RETURN_REASON_LABELS, RETURN_STATUS_LABELS } from '@/lib/returnReasons';
-import { DELIVERY_MODE_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/orderStatus';
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'En attente de paiement',
-  paid: 'Payée',
-  shipped: 'Expédiée',
-  completed: 'Livrée',
-  cancelled: 'Annulée',
-};
+import { DELIVERY_MODE_LABELS, PAYMENT_METHOD_LABELS, getDisplayStatus } from '@/lib/orderStatus';
 
 export const metadata = { title: 'Détail de la commande — Le Suffète Classic' };
 
@@ -31,6 +23,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   }
 
   const subtotal = order.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+  const display = getDisplayStatus(order);
 
   return (
     <div className="mx-auto max-w-4xl px-6 md:px-8 py-16">
@@ -46,12 +39,31 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           <h1 className="section-title">COMMANDE {order.number}</h1>
           <div className="section-title-underline" />
           <p className="text-sm text-foreground/50 mt-2">
-            {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })} ·{' '}
-            {STATUS_LABELS[order.status] ?? order.status}
+            {new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })} · {display.label}
           </p>
         </div>
         <PrintButton />
       </div>
+
+      {order.invoiceNumber && (
+        <div className="hidden print:grid grid-cols-2 gap-10 mb-10 text-sm">
+          <div>
+            <p className="text-xs tracking-widest2 text-foreground/60 mb-2">VENDEUR</p>
+            <p>{order.sellerCompanyName ?? 'Le Suffète Classic'}</p>
+            {order.sellerCompanyAddress && <p className="whitespace-pre-line text-foreground/70">{order.sellerCompanyAddress}</p>}
+            {order.sellerCompanyRegistrationNumber && <p className="text-foreground/50 text-xs mt-1">SIRET {order.sellerCompanyRegistrationNumber}</p>}
+          </div>
+          <div className="text-right">
+            <p className="text-xs tracking-widest2 text-foreground/60 mb-2">FACTURE</p>
+            <p>N° {order.invoiceNumber}</p>
+            {order.invoiceIssuedAt && (
+              <p className="text-foreground/70">
+                Émise le {new Date(order.invoiceIssuedAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-10 mb-12">
         <div id="tracking" className="scroll-mt-24">
@@ -152,6 +164,14 @@ export default async function OrderDetailPage({ params }: { params: { id: string
         <div className="flex justify-between text-base border-t border-foreground/10 pt-2 mt-2">
           <span>Total</span>
           <span>{order.total.toFixed(2)} €</span>
+        </div>
+        <div className="flex justify-between text-xs text-foreground/40 pt-1">
+          <span>dont Total HT</span>
+          <span>{order.totalExcludingVat.toFixed(2)} €</span>
+        </div>
+        <div className="flex justify-between text-xs text-foreground/40">
+          <span>dont TVA</span>
+          <span>{order.totalVatAmount.toFixed(2)} €</span>
         </div>
       </div>
 

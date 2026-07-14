@@ -65,6 +65,9 @@ export type AccountOrderDetail = {
   number: string;
   invoiceNumber: string | null;
   invoiceIssuedAt: string | null;
+  sellerCompanyName: string | null;
+  sellerCompanyAddress: string | null;
+  sellerCompanyRegistrationNumber: string | null;
   status: string;
   fulfillmentStatus: string;
   deliveryMode: string;
